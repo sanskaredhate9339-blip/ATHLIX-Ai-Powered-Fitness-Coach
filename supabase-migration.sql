@@ -1,6 +1,75 @@
 -- Supabase Migration Script for Athlix
 -- Project ID: ovogoacobyvhhtmoppun
--- This script adds user_id columns and sets up RLS policies for user data isolation
+-- This script creates tables, adds user_id columns, and sets up RLS policies for user data isolation
+
+-- Create foods table if it doesn't exist
+CREATE TABLE IF NOT EXISTS foods (
+    id TEXT PRIMARY KEY,
+    food_name TEXT NOT NULL,
+    calories NUMERIC NOT NULL,
+    protein NUMERIC,
+    carbs NUMERIC,
+    fat NUMERIC,
+    meal_type TEXT NOT NULL,
+    date TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    user_id TEXT
+);
+
+-- Create weights table if it doesn't exist
+CREATE TABLE IF NOT EXISTS weights (
+    id TEXT PRIMARY KEY,
+    weight NUMERIC NOT NULL,
+    fat NUMERIC,
+    date TEXT NOT NULL,
+    notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    user_id TEXT
+);
+
+-- Create habits table if it doesn't exist
+CREATE TABLE IF NOT EXISTS habits (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    icon TEXT NOT NULL,
+    is_custom BOOLEAN DEFAULT FALSE,
+    frequency TEXT DEFAULT 'daily',
+    user_id TEXT
+);
+
+-- Create habit_logs table if it doesn't exist
+CREATE TABLE IF NOT EXISTS habit_logs (
+    id TEXT PRIMARY KEY,
+    habit_id TEXT NOT NULL,
+    date TEXT NOT NULL,
+    completed BOOLEAN DEFAULT FALSE,
+    user_id TEXT
+);
+
+-- Create workouts table if it doesn't exist
+CREATE TABLE IF NOT EXISTS workouts (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    goal TEXT NOT NULL,
+    split_type TEXT NOT NULL,
+    days_per_week NUMERIC NOT NULL,
+    duration NUMERIC NOT NULL,
+    equipment TEXT[] NOT NULL,
+    experience TEXT NOT NULL,
+    medical_conditions TEXT,
+    days JSONB NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    user_id TEXT
+);
+
+-- Create chat_history table if it doesn't exist
+CREATE TABLE IF NOT EXISTS chat_history (
+    id TEXT PRIMARY KEY,
+    sender TEXT NOT NULL,
+    text TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    user_id TEXT
+);
 
 -- Enable RLS on all tables
 ALTER TABLE foods ENABLE ROW LEVEL SECURITY;
@@ -9,72 +78,6 @@ ALTER TABLE habits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE habit_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE workouts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chat_history ENABLE ROW LEVEL SECURITY;
-
--- Add user_id column to foods table if it doesn't exist
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'foods' AND column_name = 'user_id'
-    ) THEN
-        ALTER TABLE foods ADD COLUMN user_id TEXT;
-    END IF;
-END $$;
-
--- Add user_id column to weights table if it doesn't exist
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'weights' AND column_name = 'user_id'
-    ) THEN
-        ALTER TABLE weights ADD COLUMN user_id TEXT;
-    END IF;
-END $$;
-
--- Add user_id column to habits table if it doesn't exist
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'habits' AND column_name = 'user_id'
-    ) THEN
-        ALTER TABLE habits ADD COLUMN user_id TEXT;
-    END IF;
-END $$;
-
--- Add user_id column to habit_logs table if it doesn't exist
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'habit_logs' AND column_name = 'user_id'
-    ) THEN
-        ALTER TABLE habit_logs ADD COLUMN user_id TEXT;
-    END IF;
-END $$;
-
--- Add user_id column to workouts table if it doesn't exist
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'workouts' AND column_name = 'user_id'
-    ) THEN
-        ALTER TABLE workouts ADD COLUMN user_id TEXT;
-    END IF;
-END $$;
-
--- Add user_id column to chat_history table if it doesn't exist
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_name = 'chat_history' AND column_name = 'user_id'
-    ) THEN
-        ALTER TABLE chat_history ADD COLUMN user_id TEXT;
-    END IF;
-END $$;
 
 -- Drop existing policies if they exist
 DROP POLICY IF EXISTS "Users can view own foods" ON foods;
