@@ -54,7 +54,7 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090E] flex flex-col justify-center items-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-bg-app flex flex-col justify-center items-center p-6 relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
       <div className="absolute -top-10 -right-10 w-[200px] h-[200px] bg-accent/5 rounded-full blur-[60px] pointer-events-none" />
@@ -70,7 +70,7 @@ export const Login: React.FC = () => {
               ATHLIX
             </span>
           </Link>
-          <h2 className="font-heading font-bold text-xl text-white">Welcome Back</h2>
+          <h2 className="font-heading font-bold text-xl text-text-main">Welcome Back</h2>
           <p className="text-xs text-text-muted mt-1">Enter your credentials to enter the coach</p>
         </div>
 
@@ -83,7 +83,7 @@ export const Login: React.FC = () => {
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           {/* Email field */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-slate-300 ml-1" htmlFor="email">Email Address</label>
+            <label className="text-xs font-semibold text-text-muted ml-1" htmlFor="email">Email Address</label>
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
               <input
@@ -93,7 +93,7 @@ export const Login: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full pl-12 pr-4 py-3.5 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-xs font-sans focus:outline-none transition-all text-white placeholder:text-text-muted/60"
+                className="w-full pl-12 pr-4 py-3.5 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-xs font-sans focus:outline-none transition-all text-text-main placeholder:text-text-muted/60"
               />
             </div>
           </div>
@@ -101,7 +101,7 @@ export const Login: React.FC = () => {
           {/* Password field */}
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between items-center ml-1">
-              <label className="text-xs font-semibold text-slate-300" htmlFor="password">Password</label>
+              <label className="text-xs font-semibold text-text-muted" htmlFor="password">Password</label>
               <Link to="/forgot-password" className="text-[10px] font-bold text-primary-light hover:text-accent transition-colors">
                 Forgot?
               </Link>
@@ -115,7 +115,7 @@ export const Login: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full pl-12 pr-12 py-3.5 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-xs font-mono focus:outline-none transition-all text-white placeholder:text-text-muted/50"
+                className="w-full pl-12 pr-12 py-3.5 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-xs font-mono focus:outline-none transition-all text-text-main placeholder:text-text-muted/50"
               />
               <button
                 type="button"

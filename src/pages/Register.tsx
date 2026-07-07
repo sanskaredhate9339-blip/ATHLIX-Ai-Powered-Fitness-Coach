@@ -86,16 +86,16 @@ export const Register: React.FC = () => {
 
   if (successMode) {
     return (
-      <div className="min-h-screen bg-[#09090E] flex flex-col justify-center items-center p-6 relative overflow-hidden">
+      <div className="min-h-screen bg-bg-app flex flex-col justify-center items-center p-6 relative overflow-hidden">
         <div className="w-full max-w-md glass-panel p-8 rounded-3xl text-center z-10">
           <div className="w-16 h-16 rounded-full bg-success/15 border border-success/30 flex items-center justify-center text-success mx-auto mb-6 shadow-glow animate-bounce">
             <Mail className="w-8 h-8" />
           </div>
-          <h2 className="font-heading font-extrabold text-2xl text-white mb-2">Check your Inbox</h2>
+          <h2 className="font-heading font-extrabold text-2xl text-text-main mb-2">Check your Inbox</h2>
           <p className="text-sm text-text-muted mb-4 leading-relaxed font-sans">
-            We have sent a verification link to <span className="text-white font-semibold">{email}</span>. Please click the link to confirm your account and log in.
+            We have sent a verification link to <span className="text-text-main font-semibold">{email}</span>. Please click the link to confirm your account and log in.
           </p>
-          <div className="p-4 rounded-2xl bg-white/5 border border-white/5 text-xs text-text-muted mb-8 leading-relaxed italic">
+          <div className="p-4 rounded-2xl bg-bg-surface-alt border border-border-custom text-xs text-text-muted mb-8 leading-relaxed italic">
             Hint: In Local Mode, you can bypass email checking. Tap the button below to complete setup.
           </div>
           <button
@@ -110,7 +110,7 @@ export const Register: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#09090E] flex flex-col justify-center items-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-bg-app flex flex-col justify-center items-center p-6 relative overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
       
       <div className="w-full max-w-md glass-panel p-8 rounded-3xl z-10 transition-all duration-300">
@@ -123,7 +123,7 @@ export const Register: React.FC = () => {
               ATHLIX
             </span>
           </Link>
-          <h2 className="font-heading font-bold text-xl text-white">Create Account</h2>
+          <h2 className="font-heading font-bold text-xl text-text-main">Create Account</h2>
           <p className="text-xs text-text-muted mt-1">Start your AI health transformation today</p>
         </div>
 
@@ -136,7 +136,7 @@ export const Register: React.FC = () => {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Name */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-slate-300 ml-1" htmlFor="name">Full Name</label>
+            <label className="text-xs font-semibold text-text-muted ml-1" htmlFor="name">Full Name</label>
             <div className="relative">
               <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
               <input
@@ -146,14 +146,14 @@ export const Register: React.FC = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="John Doe"
-                className="w-full pl-12 pr-4 py-3 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-sm font-sans focus:outline-none transition-all placeholder:text-text-muted/60"
+                className="w-full pl-12 pr-4 py-3 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-sm font-sans focus:outline-none transition-all text-text-main placeholder:text-text-muted/60"
               />
             </div>
           </div>
 
           {/* Email */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-slate-300 ml-1" htmlFor="email">Email Address</label>
+            <label className="text-xs font-semibold text-text-muted ml-1" htmlFor="email">Email Address</label>
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
               <input
@@ -163,14 +163,14 @@ export const Register: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full pl-12 pr-4 py-3 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-sm font-sans focus:outline-none transition-all placeholder:text-text-muted/60"
+                className="w-full pl-12 pr-4 py-3 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-sm font-sans focus:outline-none transition-all text-text-main placeholder:text-text-muted/60"
               />
             </div>
           </div>
 
           {/* Password */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-slate-300 ml-1" htmlFor="password">Password</label>
+            <label className="text-xs font-semibold text-text-muted ml-1" htmlFor="password">Password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
               <input
@@ -180,7 +180,7 @@ export const Register: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Min. 8 characters"
-                className="w-full pl-12 pr-12 py-3 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-sm font-sans focus:outline-none transition-all placeholder:text-text-muted/60"
+                className="w-full pl-12 pr-12 py-3 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-sm font-sans focus:outline-none transition-all text-text-main placeholder:text-text-muted/60"
               />
               <button
                 type="button"
@@ -198,7 +198,7 @@ export const Register: React.FC = () => {
                   <span>Strength: {getStrengthLabel()}</span>
                   <span>{Math.round(getStrengthPercent())}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-bg-surface-alt rounded-full overflow-hidden">
                   <div 
                     className={`h-full ${getStrengthColor()} transition-all duration-300`} 
                     style={{ width: `${getStrengthPercent()}%` }}
@@ -229,7 +229,7 @@ export const Register: React.FC = () => {
 
           {/* Confirm Password */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-slate-300 ml-1" htmlFor="confirm">Confirm Password</label>
+            <label className="text-xs font-semibold text-text-muted ml-1" htmlFor="confirm">Confirm Password</label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
               <input
@@ -239,7 +239,7 @@ export const Register: React.FC = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter password"
-                className="w-full pl-12 pr-4 py-3 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-sm font-sans focus:outline-none transition-all placeholder:text-text-muted/60"
+                className="w-full pl-12 pr-4 py-3 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-sm font-sans focus:outline-none transition-all text-text-main placeholder:text-text-muted/60"
               />
             </div>
           </div>
