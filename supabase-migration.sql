@@ -2,6 +2,27 @@
 -- Project ID: ovogoacobyvhhtmoppun
 -- This script creates tables, adds user_id columns, and sets up RLS policies for user data isolation
 
+-- Create users table if it doesn't exist
+CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    email TEXT,
+    name TEXT NOT NULL,
+    age NUMERIC NOT NULL,
+    gender TEXT NOT NULL,
+    height NUMERIC NOT NULL,
+    weight NUMERIC NOT NULL,
+    goal TEXT NOT NULL,
+    experience_level TEXT NOT NULL,
+    available_equipment TEXT[] NOT NULL,
+    workout_days_preference NUMERIC NOT NULL,
+    preferred_session_duration NUMERIC NOT NULL,
+    unit_preference TEXT NOT NULL,
+    notification_preferences JSONB NOT NULL,
+    avatar_url TEXT,
+    onboarded BOOLEAN DEFAULT FALSE,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Create foods table if it doesn't exist
 CREATE TABLE IF NOT EXISTS foods (
     id TEXT PRIMARY KEY,
@@ -72,6 +93,7 @@ CREATE TABLE IF NOT EXISTS chat_history (
 );
 
 -- Enable RLS on all tables
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE foods ENABLE ROW LEVEL SECURITY;
 ALTER TABLE weights ENABLE ROW LEVEL SECURITY;
 ALTER TABLE habits ENABLE ROW LEVEL SECURITY;
@@ -80,6 +102,11 @@ ALTER TABLE workouts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chat_history ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view own users" ON users;
+DROP POLICY IF EXISTS "Users can insert own users" ON users;
+DROP POLICY IF EXISTS "Users can update own users" ON users;
+DROP POLICY IF EXISTS "Users can delete own users" ON users;
+
 DROP POLICY IF EXISTS "Users can view own foods" ON foods;
 DROP POLICY IF EXISTS "Users can insert own foods" ON foods;
 DROP POLICY IF EXISTS "Users can update own foods" ON foods;
@@ -109,6 +136,19 @@ DROP POLICY IF EXISTS "Users can view own chat_history" ON chat_history;
 DROP POLICY IF EXISTS "Users can insert own chat_history" ON chat_history;
 DROP POLICY IF EXISTS "Users can update own chat_history" ON chat_history;
 DROP POLICY IF EXISTS "Users can delete own chat_history" ON chat_history;
+
+-- Create RLS policies for users table
+CREATE POLICY "Users can view own users" ON users
+    FOR SELECT USING (auth.uid()::text = id);
+
+CREATE POLICY "Users can insert own users" ON users
+    FOR INSERT WITH CHECK (auth.uid()::text = id);
+
+CREATE POLICY "Users can update own users" ON users
+    FOR UPDATE USING (auth.uid()::text = id);
+
+CREATE POLICY "Users can delete own users" ON users
+    FOR DELETE USING (auth.uid()::text = id);
 
 -- Create RLS policies for foods table
 CREATE POLICY "Users can view own foods" ON foods
@@ -189,6 +229,7 @@ CREATE POLICY "Users can delete own chat_history" ON chat_history
     FOR DELETE USING (auth.uid()::text = user_id);
 
 -- Add index on user_id columns for better performance
+CREATE INDEX IF NOT EXISTS idx_users_id ON users(id);
 CREATE INDEX IF NOT EXISTS idx_foods_user_id ON foods(user_id);
 CREATE INDEX IF NOT EXISTS idx_weights_user_id ON weights(user_id);
 CREATE INDEX IF NOT EXISTS idx_habits_user_id ON habits(user_id);
