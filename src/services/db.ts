@@ -393,12 +393,16 @@ export const db = {
   // --- FOODS LOG FUNCTIONS ---
   async fetchFoods(date: string): Promise<FoodLog[]> {
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from('foods')
-        .select('*')
-        .eq('date', date)
-        .order('created_at', { ascending: true });
-      if (data && !error) return data as FoodLog[];
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('foods')
+          .select('*')
+          .eq('date', date)
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: true });
+        if (data && !error) return data as FoodLog[];
+      }
     }
     const allFoods = getLocal<FoodLog[]>('athlix_foods', SEED_FOODS);
     return allFoods.filter((f) => f.date === date);
@@ -406,11 +410,15 @@ export const db = {
 
   async fetchAllFoods(): Promise<FoodLog[]> {
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from('foods')
-        .select('*')
-        .order('date', { ascending: false });
-      if (data && !error) return data as FoodLog[];
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('foods')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('date', { ascending: false });
+        if (data && !error) return data as FoodLog[];
+      }
     }
     return getLocal<FoodLog[]>('athlix_foods', SEED_FOODS).sort((a, b) => b.date.localeCompare(a.date));
   },
@@ -442,8 +450,11 @@ export const db = {
 
   async deleteFood(id: string): Promise<void> {
     if (isSupabaseConfigured && supabase) {
-      await supabase.from('foods').delete().eq('id', id);
-      return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from('foods').delete().eq('id', id).eq('user_id', user.id);
+        return;
+      }
     }
     const allFoods = getLocal<FoodLog[]>('athlix_foods', SEED_FOODS);
     const filtered = allFoods.filter((f) => f.id !== id);
@@ -453,11 +464,15 @@ export const db = {
   // --- WEIGHT LOG FUNCTIONS ---
   async fetchWeights(): Promise<WeightLog[]> {
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from('weights')
-        .select('*')
-        .order('date', { ascending: true });
-      if (data && !error) return data as WeightLog[];
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('weights')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('date', { ascending: true });
+        if (data && !error) return data as WeightLog[];
+      }
     }
     return getLocal<WeightLog[]>('athlix_weights', SEED_WEIGHTS).sort((a, b) => a.date.localeCompare(b.date));
   },
@@ -509,10 +524,14 @@ export const db = {
   // --- HABIT FUNCTIONS ---
   async fetchHabits(): Promise<Habit[]> {
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from('habits')
-        .select('*');
-      if (data && !error) return data as Habit[];
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('habits')
+          .select('*')
+          .eq('user_id', user.id);
+        if (data && !error) return data as Habit[];
+      }
     }
     return getLocal<Habit[]>('athlix_habits', DEFAULT_HABITS);
   },
@@ -559,11 +578,15 @@ export const db = {
 
   async fetchHabitLogs(date: string): Promise<HabitLog[]> {
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from('habit_logs')
-        .select('*')
-        .eq('date', date);
-      if (data && !error) return data as HabitLog[];
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('habit_logs')
+          .select('*')
+          .eq('date', date)
+          .eq('user_id', user.id);
+        if (data && !error) return data as HabitLog[];
+      }
     }
     const logs = getLocal<HabitLog[]>('athlix_habit_logs', SEED_HABIT_LOGS);
     return logs.filter((l) => l.date === date);
@@ -604,11 +627,15 @@ export const db = {
   // --- WORKOUT PLAN FUNCTIONS ---
   async fetchWorkoutPlans(): Promise<WorkoutPlan[]> {
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from('workouts')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (data && !error) return data as WorkoutPlan[];
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('workouts')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+        if (data && !error) return data as WorkoutPlan[];
+      }
     }
     return getLocal<WorkoutPlan[]>('athlix_workout_plans', [SEED_WORKOUT_PLAN]);
   },
@@ -658,11 +685,15 @@ export const db = {
   // --- CHAT HISTORY FUNCTIONS ---
   async fetchChatHistory(): Promise<ChatMessage[]> {
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from('chat_history')
-        .select('*')
-        .order('created_at', { ascending: true });
-      if (data && !error) return data as ChatMessage[];
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('chat_history')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: true });
+        if (data && !error) return data as ChatMessage[];
+      }
     }
     return getLocal<ChatMessage[]>('athlix_chat_messages', SEED_CHAT_MESSAGES);
   },
