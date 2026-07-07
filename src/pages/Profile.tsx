@@ -44,7 +44,7 @@ export const Profile: React.FC = () => {
           <UserPlus className="w-10 h-10 text-primary" />
         </div>
         <div className="text-center">
-          <h3 className="font-heading font-extrabold text-xl text-white">Complete Your Profile</h3>
+          <h3 className="font-heading font-extrabold text-xl text-text-main">Complete Your Profile</h3>
           <p className="text-xs text-text-muted mt-2 max-w-md">
             Tell us about yourself so Athlix can generate personalized workout and nutrition plans.
           </p>
@@ -117,12 +117,12 @@ export const Profile: React.FC = () => {
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
         
         {/* Avatar logo placeholder */}
-        <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-primary to-accent flex items-center justify-center border-4 border-white/5 shadow-premium text-white font-heading font-extrabold text-3xl">
+        <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-primary to-accent flex items-center justify-center border-4 border-border-custom shadow-premium text-text-main font-heading font-extrabold text-3xl">
           {profile.name ? profile.name[0].toUpperCase() : 'A'}
         </div>
 
         <div className="text-center sm:text-left flex-1">
-          <h3 className="font-heading font-extrabold text-xl text-white">
+          <h3 className="font-heading font-extrabold text-xl text-text-main">
             {profile.name || 'Not provided'}
           </h3>
           <p className="text-xs text-text-muted mt-1 leading-normal font-sans">
@@ -144,7 +144,7 @@ export const Profile: React.FC = () => {
           {/* Unit Toggle Button */}
           <button
             onClick={handleUnitToggle}
-            className="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-primary-light uppercase tracking-wider hover:bg-white/10 transition-all"
+            className="px-3.5 py-1.5 rounded-xl bg-bg-surface-alt border border-border-custom text-[10px] font-bold text-primary-light uppercase tracking-wider hover:bg-bg-surface transition-all"
           >
             System: {unitSystem === 'metric' ? 'Metric' : 'Imperial'}
           </button>
@@ -153,28 +153,28 @@ export const Profile: React.FC = () => {
         <div className="grid grid-cols-2 gap-4 text-xs font-sans">
           <div className="p-4 rounded-2xl bg-bg-app/40 border border-border-custom flex flex-col gap-1.5">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Height</span>
-            <span className="font-heading font-bold text-sm text-white block">
+            <span className="font-heading font-bold text-sm text-text-main block">
               {formatHeight(profile.height)}
             </span>
           </div>
 
           <div className="p-4 rounded-2xl bg-bg-app/40 border border-border-custom flex flex-col gap-1.5">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Target weight</span>
-            <span className="font-heading font-bold text-sm text-white block">
+            <span className="font-heading font-bold text-sm text-text-main block">
               {profile.weight ? formatWeight(profile.weight) : 'Not provided'}
             </span>
           </div>
 
           <div className="p-4 rounded-2xl bg-bg-app/40 border border-border-custom flex flex-col gap-1.5">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Experience Range</span>
-            <span className="font-heading font-bold text-sm text-white block capitalize">
+            <span className="font-heading font-bold text-sm text-text-main block capitalize">
               {profile.experience_level || 'Not provided'}
             </span>
           </div>
 
           <div className="p-4 rounded-2xl bg-bg-app/40 border border-border-custom flex flex-col gap-1.5">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Age Range</span>
-            <span className="font-heading font-bold text-sm text-white block">
+            <span className="font-heading font-bold text-sm text-text-main block">
               {profile.age ? `${profile.age} Years` : 'Not provided'}
             </span>
           </div>
@@ -185,7 +185,7 @@ export const Profile: React.FC = () => {
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Available Gym Gear</span>
             <div className="flex flex-wrap gap-1.5 mt-1">
               {profile.available_equipment.map((eq) => (
-                <span key={eq} className="px-2.5 py-1 bg-white/5 border border-white/5 rounded-lg text-[9px] font-semibold text-slate-300 font-sans">
+                <span key={eq} className="px-2.5 py-1 bg-bg-surface-alt border border-border-custom rounded-lg text-[9px] font-semibold text-text-muted font-sans">
                   {eq}
                 </span>
               ))}
@@ -206,20 +206,20 @@ export const Profile: React.FC = () => {
               key={a.id}
               className={`flex items-start gap-4 p-3.5 rounded-2xl border transition-all ${
                 a.earned 
-                  ? 'border-success/20 bg-success/5 text-white' 
+                  ? 'border-success/20 bg-success/5 text-text-main' 
                   : 'border-border-custom text-text-muted'
               }`}
             >
               <div className={`p-2.5 rounded-xl border shrink-0 ${
                 a.earned 
                   ? 'bg-success/15 border-success/20 text-success shadow-glow shadow-success/5' 
-                  : 'bg-white/5 border-white/5 text-text-muted'
+                  : 'bg-bg-surface-alt border-border-custom text-text-muted'
               }`}>
                 {a.earned ? <Award className="w-5 h-5" /> : <Lock className="w-5 h-5 opacity-60" />}
               </div>
 
               <div>
-                <h5 className={`text-xs font-bold ${a.earned ? 'text-white' : 'text-text-muted font-medium'}`}>
+                <h5 className={`text-xs font-bold ${a.earned ? 'text-text-main' : 'text-text-muted font-medium'}`}>
                   {a.title}
                 </h5>
                 <p className="text-[10px] text-text-muted font-sans mt-0.5 leading-relaxed font-medium">
@@ -235,7 +235,7 @@ export const Profile: React.FC = () => {
       <div className="flex gap-4">
         <button
           onClick={() => navigate('/settings')}
-          className="flex-1 py-4 bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl text-center text-xs font-bold text-slate-300 flex items-center justify-center gap-1.5 transition-all"
+          className="flex-1 py-4 bg-bg-surface-alt hover:bg-bg-surface border border-border-custom rounded-2xl text-center text-xs font-bold text-text-muted flex items-center justify-center gap-1.5 transition-all"
         >
           <Settings className="w-4.5 h-4.5" /> App Settings
         </button>
