@@ -97,12 +97,12 @@ export const Nutrition: React.FC = () => {
   return (
     <div className="flex flex-col gap-6">
       {/* Top Tabs */}
-      <div className="flex bg-white/5 border border-white/5 p-1 rounded-2xl">
+      <div className="flex bg-bg-surface-alt border border-border-custom p-1 rounded-2xl">
         <button
           onClick={() => setActiveTab('today')}
           className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all ${
             activeTab === 'today'
-              ? 'bg-bg-surface text-white shadow-premium'
+              ? 'bg-bg-surface text-text-main shadow-premium'
               : 'text-text-muted hover:text-text-main'
           }`}
         >
@@ -115,7 +115,7 @@ export const Nutrition: React.FC = () => {
           }}
           className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all ${
             activeTab === 'history'
-              ? 'bg-bg-surface text-white shadow-premium'
+              ? 'bg-bg-surface text-text-main shadow-premium'
               : 'text-text-muted hover:text-text-main'
           }`}
         >
@@ -134,9 +134,9 @@ export const Nutrition: React.FC = () => {
             {/* Calories Ring/Progress bar */}
             <div className="flex justify-between items-center text-xs text-text-muted mb-2">
               <span>Caloric Budget</span>
-              <span className="font-bold text-white">{totalCals} / {targetCals} kcal</span>
+              <span className="font-bold text-text-main">{totalCals} / {targetCals} kcal</span>
             </div>
-            <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden mb-6">
+            <div className="w-full h-3 bg-bg-surface-alt rounded-full overflow-hidden mb-6">
               <div 
                 className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300"
                 style={{ width: `${Math.min((totalCals / targetCals) * 100, 100)}%` }}
@@ -149,9 +149,9 @@ export const Nutrition: React.FC = () => {
               <div>
                 <div className="flex justify-between text-[10px] text-text-muted mb-1 font-sans">
                   <span>Protein</span>
-                  <span className="font-bold text-white">{totalProtein}g</span>
+                  <span className="font-bold text-text-main">{totalProtein}g</span>
                 </div>
-                <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-bg-surface-alt rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-success transition-all duration-300"
                     style={{ width: `${Math.min((totalProtein / targetProtein) * 100, 100)}%` }}
@@ -164,9 +164,9 @@ export const Nutrition: React.FC = () => {
               <div>
                 <div className="flex justify-between text-[10px] text-text-muted mb-1 font-sans">
                   <span>Carbs</span>
-                  <span className="font-bold text-white">{totalCarbs}g</span>
+                  <span className="font-bold text-text-main">{totalCarbs}g</span>
                 </div>
-                <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-bg-surface-alt rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-warning transition-all duration-300"
                     style={{ width: `${Math.min((totalCarbs / targetCarbs) * 100, 100)}%` }}
@@ -179,9 +179,9 @@ export const Nutrition: React.FC = () => {
               <div>
                 <div className="flex justify-between text-[10px] text-text-muted mb-1 font-sans">
                   <span>Fat</span>
-                  <span className="font-bold text-white">{totalFat}g</span>
+                  <span className="font-bold text-text-main">{totalFat}g</span>
                 </div>
-                <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-bg-surface-alt rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-danger transition-all duration-300"
                     style={{ width: `${Math.min((totalFat / targetFat) * 100, 100)}%` }}
@@ -202,10 +202,10 @@ export const Nutrition: React.FC = () => {
                 <div key={mealType} className="glass-panel p-5 rounded-3xl">
                   <div className="flex justify-between items-center mb-3">
                     <div className="flex items-center gap-2">
-                      <div className="p-1.5 rounded-lg bg-white/5">
+                      <div className="p-1.5 rounded-lg bg-bg-surface-alt">
                         {getMealTypeIcon(mealType)}
                       </div>
-                      <h4 className="font-heading font-bold text-sm text-white">{mealType}</h4>
+                      <h4 className="font-heading font-bold text-sm text-text-main">{mealType}</h4>
                     </div>
                     <span className="text-xs font-bold text-text-muted font-mono">{mealCals} kcal</span>
                   </div>
@@ -218,7 +218,7 @@ export const Nutrition: React.FC = () => {
                           className="flex justify-between items-center p-3 rounded-2xl bg-bg-app/40 border border-border-custom"
                         >
                           <div>
-                            <h5 className="text-xs font-bold text-white leading-normal">{food.food_name}</h5>
+                            <h5 className="text-xs font-bold text-text-main leading-normal">{food.food_name}</h5>
                             <div className="flex gap-2.5 mt-1 text-[9px] text-text-muted font-sans font-medium">
                               <span>P: <strong className="text-success">{food.protein}g</strong></span>
                               <span>C: <strong className="text-warning">{food.carbs}g</strong></span>
@@ -229,7 +229,7 @@ export const Nutrition: React.FC = () => {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <span className="text-xs font-bold font-mono text-white">{food.calories} kcal</span>
+                            <span className="text-xs font-bold font-mono text-text-main">{food.calories} kcal</span>
                             <button
                               onClick={() => deleteFoodItem(food.id)}
                               className="p-1.5 rounded-lg text-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
@@ -273,7 +273,7 @@ export const Nutrition: React.FC = () => {
                 value={historySearchQuery}
                 onChange={(e) => setHistorySearchQuery(e.target.value)}
                 placeholder="Search food item name..."
-                className="w-full pl-11 pr-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-xs font-sans focus:outline-none focus:border-primary text-white"
+                className="w-full pl-11 pr-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-xs font-sans focus:outline-none focus:border-primary text-text-main"
               />
             </div>
             
@@ -283,7 +283,7 @@ export const Nutrition: React.FC = () => {
                 type="date"
                 value={historyDateFilter}
                 onChange={(e) => setHistoryDateFilter(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-xs font-sans focus:outline-none focus:border-primary text-white"
+                className="w-full pl-11 pr-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-xs font-sans focus:outline-none focus:border-primary text-text-main"
               />
             </div>
 
