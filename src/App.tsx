@@ -39,45 +39,63 @@ import { NotFound } from './pages/NotFound';
 const AuthCallback = () => {
   useEffect(() => {
     const handleOAuthCallback = async () => {
+      console.log('[AuthCallback] Starting OAuth callback handling');
+      
       try {
         if (!supabase) {
-          console.error('Supabase not configured');
+          console.error('[AuthCallback] Supabase not configured');
           window.location.href = '/login?error=no_supabase';
           return;
         }
 
-        // Supabase handles OAuth session exchange automatically from URL hash
-        // We just need to wait for the session to be established
-        const { data, error } = await supabase.auth.getSession();
+        // Supabase handles OAuth session exchange automatically from URL hash/params
+        // We need to wait for the session to be established
+        console.log('[AuthCallback] Waiting for session to be established...');
+        
+        // Try to get session with retries for slower mobile networks
+        let session = null;
+        let lastError = null;
+        
+        for (let i = 0; i < 5; i++) {
+          const { data, error } = await supabase.auth.getSession();
+          lastError = error;
+          
+          if (data.session) {
+            session = data.session;
+            console.log('[AuthCallback] Session established on attempt', i + 1);
+            break;
+          }
+          
+          // Wait before retry (exponential backoff)
+          if (i < 4) {
+            const delay = 500 * Math.pow(2, i);
+            console.log(`[AuthCallback] No session yet, retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+        }
 
-        if (error) {
-          console.error('OAuth callback error:', error);
+        if (lastError) {
+          console.error('[AuthCallback] OAuth callback error:', lastError);
           window.location.href = '/login?error=oauth_failed';
           return;
         }
 
-        if (data.session) {
+        if (session) {
+          console.log('[AuthCallback] Session established successfully');
+          console.log('[AuthCallback] User ID:', session.user.id);
+          console.log('[AuthCallback] User email:', session.user.email);
+          
+          // Wait a moment for auth state to propagate
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // Navigate to dashboard (auth context will handle onboarding check)
           window.location.href = '/dashboard';
         } else {
-          // If no session yet, wait a moment and try again
-          // Supabase may still be processing the OAuth exchange
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          const { data: retryData, error: retryError } = await supabase.auth.getSession();
-
-          if (retryError) {
-            console.error('OAuth retry error:', retryError);
-            window.location.href = '/login?error=oauth_retry_failed';
-            return;
-          }
-
-          if (retryData.session) {
-            window.location.href = '/dashboard';
-          } else {
-            window.location.href = '/login?error=no_session';
-          }
+          console.error('[AuthCallback] No session after retries');
+          window.location.href = '/login?error=no_session';
         }
       } catch (err) {
-        console.error('OAuth callback exception:', err);
+        console.error('[AuthCallback] OAuth callback exception:', err);
         window.location.href = '/login?error=oauth_error';
       }
     };

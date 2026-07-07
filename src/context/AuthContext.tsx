@@ -28,16 +28,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Initial Auth Check
   useEffect(() => {
     const checkAuth = async () => {
+      console.log('[AuthContext] Starting initial auth check');
       setIsLoading(true);
       if (isSupabaseConfigured && supabase) {
         // Real Supabase Session Listeners
+        console.log('[AuthContext] Checking for existing session...');
         const { data: { session } } = await supabase.auth.getSession();
+        
         if (session) {
+          console.log('[AuthContext] Session found, user ID:', session.user.id);
           setIsAuthenticated(true);
           setUserEmail(session.user.email || null);
+          
+          console.log('[AuthContext] Fetching user profile...');
           const p = await db.fetchUserProfile();
+          
           // If no profile exists for this user, create a minimal one
           if (!p) {
+            console.log('[AuthContext] No profile found, creating minimal profile...');
             const newProfile = await db.updateUserProfile({
               id: session.user.id,
               email: session.user.email,
@@ -61,19 +69,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               },
               onboarded: false,
             });
+            console.log('[AuthContext] Minimal profile created, onboarded:', newProfile.onboarded);
             setProfile(newProfile);
           } else {
+            console.log('[AuthContext] Profile found, onboarded:', p.onboarded);
             setProfile(p);
           }
+        } else {
+          console.log('[AuthContext] No existing session found');
         }
         
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+          console.log('[AuthContext] Auth state changed:', event);
+          
           if (session) {
+            console.log('[AuthContext] Session established, user ID:', session.user.id);
             setIsAuthenticated(true);
             setUserEmail(session.user.email || null);
+            
+            console.log('[AuthContext] Fetching user profile...');
             const p = await db.fetchUserProfile();
+            
             // If no profile exists for this user, create a minimal one
             if (!p) {
+              console.log('[AuthContext] No profile found, creating minimal profile...');
               const newProfile = await db.updateUserProfile({
                 id: session.user.id,
                 email: session.user.email,
@@ -97,11 +116,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 },
                 onboarded: false,
               });
+              console.log('[AuthContext] Minimal profile created, onboarded:', newProfile.onboarded);
               setProfile(newProfile);
             } else {
+              console.log('[AuthContext] Profile found, onboarded:', p.onboarded);
               setProfile(p);
             }
           } else {
+            console.log('[AuthContext] Session ended');
             setIsAuthenticated(false);
             setUserEmail(null);
             setProfile(null);
@@ -112,6 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return () => subscription.unsubscribe();
       } else {
         // Local Fallback Auth Check
+        console.log('[AuthContext] Using local fallback auth');
         const sessionActive = localStorage.getItem('athlix_session_active') === 'true';
         if (sessionActive) {
           setIsAuthenticated(true);
@@ -160,25 +183,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       if (isSupabaseConfigured && supabase) {
-        const { error } = await supabase.auth.signInWithOAuth({
+        console.log('[Auth] Starting Google OAuth flow');
+        const redirectUrl = `${window.location.origin}/auth/callback`;
+        console.log('[Auth] Redirect URL:', redirectUrl);
+        
+        const { data, error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            redirectTo: `${window.location.origin}/auth/callback`,
+            redirectTo: redirectUrl,
+            skipBrowserRedirect: false, // Ensure redirect-based flow (not popup)
             queryParams: {
               access_type: 'offline',
               prompt: 'consent',
             }
           }
         });
+        
         if (error) {
-          console.error('Google OAuth error:', error);
+          console.error('[Auth] Google OAuth error:', error);
           throw error;
         }
+        
+        console.log('[Auth] OAuth initiated successfully, redirecting to:', data?.url);
       } else {
         throw new Error('Google SSO requires Supabase configuration. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.');
       }
     } catch (error) {
-      console.error('Google sign-in error:', error);
+      console.error('[Auth] Google sign-in error:', error);
       throw error;
     } finally {
       setIsLoading(false);
