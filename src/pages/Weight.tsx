@@ -74,7 +74,7 @@ export const Weight: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Current Weight</span>
-            <span className="font-heading font-extrabold text-lg text-white mt-0.5 block">
+            <span className="font-heading font-extrabold text-lg text-text-main mt-0.5 block">
               {formatWeight(currentWeight)}
             </span>
             <span className="text-[9px] text-text-muted block mt-1">Starting: {profile?.weight ? formatWeight(profile.weight) : '--'}</span>
@@ -88,7 +88,7 @@ export const Weight: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Target Goal</span>
-            <span className="font-heading font-extrabold text-lg text-white mt-0.5 block">
+            <span className="font-heading font-extrabold text-lg text-text-main mt-0.5 block">
               {formatWeight(targetWeight)}
             </span>
             <span className="text-[9px] text-text-muted block mt-1">Goal: {profile?.goal}</span>
@@ -102,7 +102,7 @@ export const Weight: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">BMI Metric</span>
-            <span className="font-heading font-extrabold text-lg text-white mt-0.5 block">{bmi || '--'}</span>
+            <span className="font-heading font-extrabold text-lg text-text-main mt-0.5 block">{bmi || '--'}</span>
             <span className={`text-[9px] font-semibold block mt-1 ${bmiDetails.color}`}>{bmiDetails.label}</span>
           </div>
         </div>
@@ -130,7 +130,7 @@ export const Weight: React.FC = () => {
               {chartData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--text-muted)" strokeOpacity={0.1} />
                     <XAxis dataKey="date" stroke="var(--text-muted)" tickLine={false} />
                     <YAxis stroke="var(--text-muted)" tickLine={false} />
                     <Tooltip
@@ -166,16 +166,16 @@ export const Weight: React.FC = () => {
                     className="flex justify-between items-center p-4 rounded-2xl bg-bg-app/40 border border-border-custom hover:border-primary-light/20 transition-all"
                   >
                     <div className="flex items-center gap-3.5">
-                      <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 text-text-muted">
+                      <div className="p-2.5 rounded-xl bg-bg-surface-alt border border-border-custom text-text-muted">
                         <Calendar className="w-4.5 h-4.5" />
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-white">{formatWeight(w.weight)}</h4>
+                        <h4 className="text-xs font-bold text-text-main">{formatWeight(w.weight)}</h4>
                         <span className="text-[10px] text-text-muted font-sans font-medium mt-0.5 block">
                           Logged: {new Date(w.date).toLocaleDateString()} &bull; Fat: {w.body_fat ? `${w.body_fat}%` : 'N/A'}
                         </span>
                         {w.notes && (
-                          <p className="text-[9px] text-text-muted font-sans mt-1.5 italic bg-white/5 px-2 py-1 rounded-lg w-fit">
+                          <p className="text-[9px] text-text-muted font-sans mt-1.5 italic bg-bg-surface-alt px-2 py-1 rounded-lg w-fit">
                             "{w.notes}"
                           </p>
                         )}
@@ -218,19 +218,19 @@ export const Weight: React.FC = () => {
             <div className="flex flex-col gap-3 font-sans text-[10px] text-text-muted font-medium">
               <div className="flex justify-between items-center py-1.5 border-b border-border-custom/50">
                 <span>Underweight</span>
-                <span className="text-white">&lt; 18.5</span>
+                <span className="text-text-main">&lt; 18.5</span>
               </div>
               <div className="flex justify-between items-center py-1.5 border-b border-border-custom/50">
                 <span className="text-success">Normal Range</span>
-                <span className="text-white">18.5 - 24.9</span>
+                <span className="text-text-main">18.5 - 24.9</span>
               </div>
               <div className="flex justify-between items-center py-1.5 border-b border-border-custom/50">
                 <span className="text-warning">Overweight</span>
-                <span className="text-white">25.0 - 29.9</span>
+                <span className="text-text-main">25.0 - 29.9</span>
               </div>
               <div className="flex justify-between items-center py-1.5">
                 <span className="text-danger">Obese</span>
-                <span className="text-white">&gt;= 30.0</span>
+                <span className="text-text-main">&gt;= 30.0</span>
               </div>
             </div>
           </div>
@@ -249,7 +249,7 @@ export const Weight: React.FC = () => {
 
       {/* Log Weight modal popups */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-[#09090E]/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-bg-app/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="w-full max-w-md glass-panel p-6 rounded-3xl relative animate-pulse-glow-once">
             <button
               onClick={() => setModalOpen(false)}
@@ -258,12 +258,12 @@ export const Weight: React.FC = () => {
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="font-heading font-extrabold text-xl text-white mb-2">Record Weight</h3>
+            <h3 className="font-heading font-extrabold text-xl text-text-main mb-2">Record Weight</h3>
             <p className="text-xs text-text-muted mb-6">Log weight metrics to update your profile stats</p>
 
             <form onSubmit={handleSave} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-300">Weight ({weightUnit})</label>
+                <label className="text-xs font-semibold text-text-muted">Weight ({weightUnit})</label>
                 <input
                   type="number"
                   step="0.1"
@@ -271,30 +271,30 @@ export const Weight: React.FC = () => {
                   value={newWeight}
                   onChange={(e) => setNewWeight(e.target.value)}
                   placeholder="e.g. 74.5"
-                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-white"
+                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-text-main"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-300">Body Fat % (Optional)</label>
+                <label className="text-xs font-semibold text-text-muted">Body Fat % (Optional)</label>
                 <input
                   type="number"
                   step="0.1"
                   value={newBodyFat}
                   onChange={(e) => setNewBodyFat(e.target.value)}
                   placeholder="e.g. 15.4"
-                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-white"
+                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-text-main"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-300">Notes (Optional)</label>
+                <label className="text-xs font-semibold text-text-muted">Notes (Optional)</label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="e.g. Morning log, fasted status..."
                   rows={2}
-                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-white resize-none"
+                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-text-main resize-none"
                 />
               </div>
 
