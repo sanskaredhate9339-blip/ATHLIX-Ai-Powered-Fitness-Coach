@@ -186,7 +186,7 @@ export const NutritionLog: React.FC = () => {
       {/* Main Container */}
       <div className="glass-panel p-6 rounded-3xl">
         <div className="text-center mb-6">
-          <h2 className="font-heading font-extrabold text-xl text-white">Food Calorie Scanner</h2>
+          <h2 className="font-heading font-extrabold text-xl text-text-main">Food Calorie Scanner</h2>
           <p className="text-xs text-text-muted mt-1">Let AI identify your meal macros or log manually</p>
         </div>
 
@@ -220,7 +220,7 @@ export const NutritionLog: React.FC = () => {
                   {devices.length > 1 && (
                     <button
                       onClick={switchCamera}
-                      className="absolute top-4 right-4 z-20 p-3 bg-black/50 backdrop-blur-sm rounded-full text-white hover:bg-black/70 transition-colors"
+                      className="absolute top-4 right-4 z-20 p-3 bg-black/50 backdrop-blur-sm rounded-full text-text-main hover:bg-black/70 transition-colors"
                       aria-label="Switch camera"
                     >
                       <RefreshCw className="w-5 h-5" />
@@ -230,13 +230,13 @@ export const NutritionLog: React.FC = () => {
                 <div className="flex gap-4">
                   <button
                     onClick={capturePhoto}
-                    className="flex-1 py-3.5 rounded-2xl bg-gradient-to-r from-success to-emerald-400 text-white text-xs font-bold shadow-glow shadow-success/15 hover:brightness-105"
+                    className="flex-1 py-3.5 rounded-2xl bg-gradient-to-r from-success to-emerald-400 text-text-main text-xs font-bold shadow-glow shadow-success/15 hover:brightness-105"
                   >
                     Capture Plate
                   </button>
                   <button
                     onClick={stopWebcam}
-                    className="px-6 py-3.5 rounded-2xl border border-border-custom hover:bg-white/5 text-xs font-bold text-text-muted hover:text-text-main"
+                    className="px-6 py-3.5 rounded-2xl border border-border-custom hover:bg-bg-surface-alt text-xs font-bold text-text-muted hover:text-text-main"
                   >
                     Cancel
                   </button>
@@ -315,7 +315,7 @@ export const NutritionLog: React.FC = () => {
         ) : (
           <button
             onClick={() => setManualMode(false)}
-            className="w-full py-2.5 rounded-xl border border-border-custom text-center text-xs font-bold text-primary-light hover:bg-white/5 transition-colors mb-4"
+            className="w-full py-2.5 rounded-xl border border-border-custom text-center text-xs font-bold text-primary-light hover:bg-bg-surface-alt transition-colors mb-4"
           >
             ← Return to AI Scan Mode
           </button>
@@ -335,8 +335,8 @@ export const NutritionLog: React.FC = () => {
                   {suggestions}
                 </p>
                 <div className="flex gap-4 mt-3 text-xs font-sans font-bold">
-                  <span className="text-white">Healthy Score: <strong className="text-accent">{healthyScore}/10</strong></span>
-                  <span className="text-white">Serving: <strong className="text-slate-300">{servingSize}</strong></span>
+                  <span className="text-text-main">Healthy Score: <strong className="text-accent">{healthyScore}/10</strong></span>
+                  <span className="text-text-main">Serving: <strong className="text-text-muted">{servingSize}</strong></span>
                 </div>
               </div>
             )}
@@ -344,26 +344,26 @@ export const NutritionLog: React.FC = () => {
             {/* Editable Fields */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-300 ml-1">Food Item Name</label>
+                <label className="text-xs font-semibold text-text-muted ml-1">Food Item Name</label>
                 <input
                   type="text"
                   required
                   value={foodName}
                   onChange={(e) => setFoodName(e.target.value)}
                   placeholder="e.g. Avocado Toast"
-                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-xs font-sans focus:outline-none focus:border-primary text-white"
+                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-xs font-sans focus:outline-none focus:border-primary text-text-main"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-300 ml-1">Serving Size</label>
+                <label className="text-xs font-semibold text-text-muted ml-1">Serving Size</label>
                 <input
                   type="text"
                   required
                   value={servingSize}
                   onChange={(e) => setServingSize(e.target.value)}
                   placeholder="e.g. 1 plate, 300g"
-                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-xs font-sans focus:outline-none focus:border-primary text-white"
+                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-xs font-sans focus:outline-none focus:border-primary text-text-main"
                 />
               </div>
             </div>
@@ -377,7 +377,7 @@ export const NutritionLog: React.FC = () => {
                   required
                   value={calories}
                   onChange={(e) => setCalories(e.target.value)}
-                  className="w-full p-2 bg-bg-app border border-border-custom rounded-xl text-xs font-sans focus:outline-none focus:border-primary text-white text-center"
+                  className="w-full p-2 bg-bg-app border border-border-custom rounded-xl text-xs font-sans focus:outline-none focus:border-primary text-text-main text-center"
                 />
               </div>
 
@@ -389,7 +389,7 @@ export const NutritionLog: React.FC = () => {
                   required
                   value={protein}
                   onChange={(e) => setProtein(e.target.value)}
-                  className="w-full p-2 bg-bg-app border border-border-custom rounded-xl text-xs font-sans focus:outline-none focus:border-primary text-white text-center"
+                  className="w-full p-2 bg-bg-app border border-border-custom rounded-xl text-xs font-sans focus:outline-none focus:border-primary text-text-main text-center"
                 />
               </div>
 
@@ -401,7 +401,7 @@ export const NutritionLog: React.FC = () => {
                   required
                   value={carbs}
                   onChange={(e) => setCarbs(e.target.value)}
-                  className="w-full p-2 bg-bg-app border border-border-custom rounded-xl text-xs font-sans focus:outline-none focus:border-primary text-white text-center"
+                  className="w-full p-2 bg-bg-app border border-border-custom rounded-xl text-xs font-sans focus:outline-none focus:border-primary text-text-main text-center"
                 />
               </div>
 
@@ -413,14 +413,14 @@ export const NutritionLog: React.FC = () => {
                   required
                   value={fat}
                   onChange={(e) => setFat(e.target.value)}
-                  className="w-full p-2 bg-bg-app border border-border-custom rounded-xl text-xs font-sans focus:outline-none focus:border-primary text-white text-center"
+                  className="w-full p-2 bg-bg-app border border-border-custom rounded-xl text-xs font-sans focus:outline-none focus:border-primary text-text-main text-center"
                 />
               </div>
             </div>
 
             {/* Meal Type Selection */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-300 ml-1">Meal Type</label>
+              <label className="text-xs font-semibold text-text-muted ml-1">Meal Type</label>
               <div className="grid grid-cols-4 gap-2">
                 {(['Breakfast', 'Lunch', 'Dinner', 'Snack'] as const).map((type) => (
                   <button
@@ -430,7 +430,7 @@ export const NutritionLog: React.FC = () => {
                     className={`py-2 rounded-xl border text-[10px] font-bold transition-all ${
                       mealType === type
                         ? 'border-primary bg-primary/10 text-primary-light'
-                        : 'border-border-custom hover:bg-white/5 text-text-muted hover:text-text-main'
+                        : 'border-border-custom hover:bg-bg-surface-alt text-text-muted hover:text-text-main'
                     }`}
                   >
                     {type}
@@ -441,13 +441,13 @@ export const NutritionLog: React.FC = () => {
 
             {/* Date Pick */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-300 ml-1">Logging Date</label>
+              <label className="text-xs font-semibold text-text-muted ml-1">Logging Date</label>
               <input
                 type="date"
                 required
                 value={logDate}
                 onChange={(e) => setLogDate(e.target.value)}
-                className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-xs font-sans focus:outline-none focus:border-primary text-white"
+                className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-xs font-sans focus:outline-none focus:border-primary text-text-main"
               />
             </div>
 
