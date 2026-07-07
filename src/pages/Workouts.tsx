@@ -182,12 +182,12 @@ export const Workouts: React.FC = () => {
   return (
     <div className="flex flex-col gap-6">
       {/* Tab controls */}
-      <div className="flex bg-white/5 border border-white/5 p-1 rounded-2xl">
+      <div className="flex bg-bg-surface-alt border border-border-custom p-1 rounded-2xl">
         <button
           onClick={() => setActiveTab('myplan')}
           className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all ${
             activeTab === 'myplan'
-              ? 'bg-bg-surface text-white shadow-premium'
+              ? 'bg-bg-surface text-text-main shadow-premium'
               : 'text-text-muted hover:text-text-main'
           }`}
         >
@@ -197,7 +197,7 @@ export const Workouts: React.FC = () => {
           onClick={() => setActiveTab('active')}
           className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all ${
             activeTab === 'active'
-              ? 'bg-bg-surface text-white shadow-premium'
+              ? 'bg-bg-surface text-text-main shadow-premium'
               : 'text-text-muted hover:text-text-main'
           }`}
         >
@@ -207,7 +207,7 @@ export const Workouts: React.FC = () => {
           onClick={() => setActiveTab('generate')}
           className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all ${
             activeTab === 'generate'
-              ? 'bg-bg-surface text-white shadow-premium'
+              ? 'bg-bg-surface text-text-main shadow-premium'
               : 'text-text-muted hover:text-text-main'
           }`}
         >
@@ -224,13 +224,13 @@ export const Workouts: React.FC = () => {
               {/* Plan overview info banner */}
               <div className="glass-panel p-5 rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/5 to-transparent flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <div>
-                  <h3 className="font-heading font-extrabold text-base text-white">{activeWorkoutPlan.name}</h3>
+                  <h3 className="font-heading font-extrabold text-base text-text-main">{activeWorkoutPlan.name}</h3>
                   <p className="text-xs text-text-muted mt-1 font-sans">
                     Goal: <strong className="text-primary-light">{activeWorkoutPlan.goal}</strong> &bull; Experience: <strong>{activeWorkoutPlan.experience}</strong>
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <span className="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-slate-300">
+                  <span className="px-3.5 py-1.5 rounded-xl bg-bg-surface-alt border border-border-custom text-[10px] font-bold text-text-muted">
                     {activeWorkoutPlan.days.length} Days Split
                   </span>
                 </div>
@@ -256,7 +256,7 @@ export const Workouts: React.FC = () => {
                           <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest block">
                             Day {day.dayIndex + 1} &bull; {day.muscle_group}
                           </span>
-                          <span className="font-heading font-bold text-sm text-white mt-1 block">
+                          <span className="font-heading font-bold text-sm text-text-main mt-1 block">
                             {day.muscle_group} Workout
                           </span>
                           <span className="text-[10px] text-text-muted mt-1.5 block font-sans">
@@ -283,7 +283,7 @@ export const Workouts: React.FC = () => {
                                 className="flex justify-between items-center p-3 rounded-2xl bg-bg-app/40 border border-border-custom/60"
                               >
                                 <div>
-                                  <h5 className="text-xs font-bold text-white leading-normal">{ex.name}</h5>
+                                  <h5 className="text-xs font-bold text-text-main leading-normal">{ex.name}</h5>
                                   <p className="text-[9px] text-text-muted font-sans font-medium mt-0.5">
                                     {ex.sets} Sets &bull; {ex.reps} Reps &bull; Difficulty: {ex.difficulty}
                                   </p>
@@ -320,7 +320,7 @@ export const Workouts: React.FC = () => {
           ) : (
             <div className="text-center py-12 glass-panel rounded-3xl">
               <Dumbbell className="w-10 h-10 text-text-muted mx-auto mb-4 opacity-50" />
-              <h3 className="font-heading font-bold text-lg text-white mb-2">No Active Routine</h3>
+              <h3 className="font-heading font-bold text-lg text-text-main mb-2">No Active Routine</h3>
               <p className="text-xs text-text-muted mb-6 max-w-sm mx-auto leading-relaxed">
                 Generate a personalized weekly schedule by clicking the AI Builder tab to compile customized splits.
               </p>
@@ -343,12 +343,12 @@ export const Workouts: React.FC = () => {
               {/* Stopwatch & Rest Timer Bar */}
               <div className="glass-panel p-5 rounded-3xl border border-primary/20 bg-gradient-to-r from-primary/5 to-transparent flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-primary-light">
+                  <div className="w-10 h-10 rounded-full bg-bg-surface-alt border border-border-custom flex items-center justify-center text-primary-light">
                     <Clock className="w-5 h-5" />
                   </div>
                   <div>
                     <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Stopwatch Rest Timer</span>
-                    <span className="font-heading font-extrabold text-xl text-white font-mono block mt-0.5">
+                    <span className="font-heading font-extrabold text-xl text-text-main font-mono block mt-0.5">
                       {formatTime(stopwatchTime)}
                     </span>
                   </div>
@@ -356,7 +356,7 @@ export const Workouts: React.FC = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setStopwatchActive(!stopwatchActive)}
-                    className={`p-2.5 rounded-xl border text-white transition-all ${
+                    className={`p-2.5 rounded-xl border text-text-main transition-all ${
                       stopwatchActive 
                         ? 'border-warning/30 bg-warning/10 hover:bg-warning/20' 
                         : 'border-success/30 bg-success/10 hover:bg-success/20'
@@ -370,7 +370,7 @@ export const Workouts: React.FC = () => {
                       setStopwatchTime(0);
                       setStopwatchActive(false);
                     }}
-                    className="p-2.5 rounded-xl border border-border-custom hover:bg-white/5 text-text-muted hover:text-text-main transition-all"
+                    className="p-2.5 rounded-xl border border-border-custom hover:bg-bg-surface-alt text-text-muted hover:text-text-main transition-all"
                     aria-label="Reset timer"
                   >
                     <RotateCcw className="w-4.5 h-4.5" />
@@ -380,7 +380,7 @@ export const Workouts: React.FC = () => {
 
               {/* Day title info */}
               <div>
-                <h3 className="font-heading font-extrabold text-lg text-white">
+                <h3 className="font-heading font-extrabold text-lg text-text-main">
                   Active Session: {activeDay.muscle_group}
                 </h3>
                 <p className="text-xs text-text-muted font-sans mt-0.5">
@@ -394,7 +394,7 @@ export const Workouts: React.FC = () => {
                   <div key={exIdx} className="glass-panel p-5 rounded-3xl">
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h4 className="font-heading font-bold text-sm text-white">{ex.name}</h4>
+                        <h4 className="font-heading font-bold text-sm text-text-main">{ex.name}</h4>
                         <p className="text-[10px] text-text-muted font-sans font-medium mt-0.5">{ex.difficulty}</p>
                       </div>
                       <button
@@ -428,7 +428,7 @@ export const Workouts: React.FC = () => {
                                 : 'bg-bg-app/40 border-border-custom/50'
                             }`}
                           >
-                            <span className="text-xs font-bold text-white text-center font-mono">
+                            <span className="text-xs font-bold text-text-main text-center font-mono">
                               {setIdx + 1}
                             </span>
                             
@@ -438,7 +438,7 @@ export const Workouts: React.FC = () => {
                               value={setWeight}
                               onChange={(e) => handleWeightChange(exIdx, setIdx, e.target.value)}
                               placeholder="kg/lbs"
-                              className="w-full py-1.5 px-2 bg-bg-app border border-border-custom rounded-lg text-xs font-mono text-center focus:outline-none focus:border-primary text-white"
+                              className="w-full py-1.5 px-2 bg-bg-app border border-border-custom rounded-lg text-xs font-mono text-center focus:outline-none focus:border-primary text-text-main"
                             />
 
                             {/* Reps input */}
@@ -447,7 +447,7 @@ export const Workouts: React.FC = () => {
                               value={setReps}
                               onChange={(e) => handleRepsChange(exIdx, setIdx, e.target.value)}
                               placeholder="reps"
-                              className="w-full py-1.5 px-2 bg-bg-app border border-border-custom rounded-lg text-xs font-mono text-center focus:outline-none focus:border-primary text-white"
+                              className="w-full py-1.5 px-2 bg-bg-app border border-border-custom rounded-lg text-xs font-mono text-center focus:outline-none focus:border-primary text-text-main"
                             />
 
                             {/* Checkbox button */}
@@ -457,7 +457,7 @@ export const Workouts: React.FC = () => {
                                 onClick={() => handleToggleSetCheck(exIdx, setIdx)}
                                 className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-all ${
                                   isSetCompleted
-                                    ? 'bg-success border-success text-white'
+                                    ? 'bg-success border-success text-text-main'
                                     : 'border-border-custom hover:border-primary-light text-transparent hover:text-text-muted'
                                 }`}
                                 aria-label={`Mark set ${setIdx + 1} as complete`}
