@@ -63,7 +63,7 @@ export const Analytics: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Habit Adherence</span>
-            <span className="font-heading font-extrabold text-lg text-white mt-0.5 block">{habitCompletionRate}%</span>
+            <span className="font-heading font-extrabold text-lg text-text-main mt-0.5 block">{habitCompletionRate}%</span>
             <span className="text-[9px] text-text-muted block mt-1">Streaking completions today</span>
           </div>
         </div>
@@ -75,7 +75,7 @@ export const Analytics: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Average Intake</span>
-            <span className="font-heading font-extrabold text-lg text-white mt-0.5 block">2,110 kcal</span>
+            <span className="font-heading font-extrabold text-lg text-text-main mt-0.5 block">2,110 kcal</span>
             <span className="text-[9px] text-text-muted block mt-1">Target budget: {targetCals} kcal</span>
           </div>
         </div>
@@ -87,7 +87,7 @@ export const Analytics: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Total Weight Shift</span>
-            <span className="font-heading font-extrabold text-lg text-white mt-0.5 block">
+            <span className="font-heading font-extrabold text-lg text-text-main mt-0.5 block">
               {weights.length > 1 ? `${(weights[0].weight - weights[weights.length - 1].weight).toFixed(1)} ${weightUnit}` : `0 ${weightUnit}`}
             </span>
             <span className="text-[9px] text-text-muted block mt-1">Since starting logs</span>
@@ -121,7 +121,7 @@ export const Analytics: React.FC = () => {
                     }}
                   />
                   <Bar dataKey="intake" fill="var(--primary)" radius={[6, 6, 0, 0]} />
-                  <Bar dataKey="target" fill="rgba(255, 255, 255, 0.08)" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="target" fill="var(--text-muted)" fillOpacity={0.15} radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
