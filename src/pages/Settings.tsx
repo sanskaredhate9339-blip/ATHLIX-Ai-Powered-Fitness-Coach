@@ -32,11 +32,11 @@ export const Settings: React.FC = () => {
         {/* Theme Settings */}
         <div className="flex justify-between items-center py-2.5 border-b border-border-custom/50">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-white/5 text-text-muted">
+            <div className="p-2 rounded-xl bg-bg-surface-alt text-text-muted">
               {theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </div>
             <div>
-              <h5 className="text-xs font-bold text-white">App Dark Theme</h5>
+              <h5 className="text-xs font-bold text-text-main">App Dark Theme</h5>
               <p className="text-[10px] text-text-muted font-sans font-medium mt-0.5">Toggle interface luminance</p>
             </div>
           </div>
@@ -51,11 +51,11 @@ export const Settings: React.FC = () => {
         {/* Notifications toggle */}
         <div className="flex justify-between items-center py-2.5 border-b border-border-custom/50">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-white/5 text-text-muted">
+            <div className="p-2 rounded-xl bg-bg-surface-alt text-text-muted">
               <Bell className="w-5 h-5" />
             </div>
             <div>
-              <h5 className="text-xs font-bold text-white">Push Notifications</h5>
+              <h5 className="text-xs font-bold text-text-main">Push Notifications</h5>
               <p className="text-[10px] text-text-muted font-sans font-medium mt-0.5">Alerts about workout targets and hydration check-ins</p>
             </div>
           </div>
@@ -63,18 +63,18 @@ export const Settings: React.FC = () => {
             type="checkbox"
             checked={notifications}
             onChange={(e) => setNotifications(e.target.checked)}
-            className="w-10 h-5 bg-white/5 rounded-full appearance-none cursor-pointer border border-border-custom checked:bg-primary relative before:absolute before:content-[''] before:w-4 before:h-4 before:bg-white before:rounded-full before:top-[1px] before:left-[1px] checked:before:translate-x-5 before:transition-all"
+            className="w-10 h-5 bg-bg-surface-alt rounded-full appearance-none cursor-pointer border border-border-custom checked:bg-primary relative before:absolute before:content-[''] before:w-4 before:h-4 before:bg-white before:rounded-full before:top-[1px] before:left-[1px] checked:before:translate-x-5 before:transition-all"
           />
         </div>
 
         {/* Voice Coach Sound */}
         <div className="flex justify-between items-center py-2.5 border-b border-border-custom/50">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-white/5 text-text-muted">
+            <div className="p-2 rounded-xl bg-bg-surface-alt text-text-muted">
               <Volume2 className="w-5 h-5" />
             </div>
             <div>
-              <h5 className="text-xs font-bold text-white">Audio Form Feedback</h5>
+              <h5 className="text-xs font-bold text-text-main">Audio Form Feedback</h5>
               <p className="text-[10px] text-text-muted font-sans font-medium mt-0.5">Voice feedback alerts during squats checking</p>
             </div>
           </div>
@@ -82,18 +82,18 @@ export const Settings: React.FC = () => {
             type="checkbox"
             checked={soundEnabled}
             onChange={(e) => setSoundEnabled(e.target.checked)}
-            className="w-10 h-5 bg-white/5 rounded-full appearance-none cursor-pointer border border-border-custom checked:bg-primary relative before:absolute before:content-[''] before:w-4 before:h-4 before:bg-white before:rounded-full before:top-[1px] before:left-[1px] checked:before:translate-x-5 before:transition-all"
+            className="w-10 h-5 bg-bg-surface-alt rounded-full appearance-none cursor-pointer border border-border-custom checked:bg-primary relative before:absolute before:content-[''] before:w-4 before:h-4 before:bg-white before:rounded-full before:top-[1px] before:left-[1px] checked:before:translate-x-5 before:transition-all"
           />
         </div>
 
         {/* Health database sync */}
         <div className="flex justify-between items-center py-2.5">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-white/5 text-text-muted">
+            <div className="p-2 rounded-xl bg-bg-surface-alt text-text-muted">
               <Database className="w-5 h-5" />
             </div>
             <div>
-              <h5 className="text-xs font-bold text-white">Google Fit Synchronization</h5>
+              <h5 className="text-xs font-bold text-text-main">Google Fit Synchronization</h5>
               <p className="text-[10px] text-text-muted font-sans font-medium mt-0.5">Sync step counts and weights with external clouds</p>
             </div>
           </div>
@@ -101,7 +101,7 @@ export const Settings: React.FC = () => {
             type="checkbox"
             checked={googleFitSync}
             onChange={(e) => setGoogleFitSync(e.target.checked)}
-            className="w-10 h-5 bg-white/5 rounded-full appearance-none cursor-pointer border border-border-custom checked:bg-primary relative before:absolute before:content-[''] before:w-4 before:h-4 before:bg-white before:rounded-full before:top-[1px] before:left-[1px] checked:before:translate-x-5 before:transition-all"
+            className="w-10 h-5 bg-bg-surface-alt rounded-full appearance-none cursor-pointer border border-border-custom checked:bg-primary relative before:absolute before:content-[''] before:w-4 before:h-4 before:bg-white before:rounded-full before:top-[1px] before:left-[1px] checked:before:translate-x-5 before:transition-all"
           />
         </div>
       </div>
@@ -112,28 +112,28 @@ export const Settings: React.FC = () => {
           Security Settings
         </h4>
 
-        <div className="flex justify-between items-center py-1.5 border-b border-border-custom/50 text-xs font-sans hover:text-white cursor-pointer group transition-colors">
+        <div className="flex justify-between items-center py-1.5 border-b border-border-custom/50 text-xs font-sans hover:text-text-main cursor-pointer group transition-colors">
           <div className="flex items-center gap-3">
             <Key className="w-4.5 h-4.5 text-text-muted" />
             <span>Update Credentials Password</span>
           </div>
-          <ChevronRight className="w-4.5 h-4.5 text-text-muted group-hover:text-white transition-colors" />
+          <ChevronRight className="w-4.5 h-4.5 text-text-muted group-hover:text-text-main transition-colors" />
         </div>
 
-        <div className="flex justify-between items-center py-1.5 border-b border-border-custom/50 text-xs font-sans hover:text-white cursor-pointer group transition-colors">
+        <div className="flex justify-between items-center py-1.5 border-b border-border-custom/50 text-xs font-sans hover:text-text-main cursor-pointer group transition-colors">
           <div className="flex items-center gap-3">
             <Shield className="w-4.5 h-4.5 text-text-muted" />
             <span>Privacy & GDPR Configurations</span>
           </div>
-          <ChevronRight className="w-4.5 h-4.5 text-text-muted group-hover:text-white transition-colors" />
+          <ChevronRight className="w-4.5 h-4.5 text-text-muted group-hover:text-text-main transition-colors" />
         </div>
 
-        <div className="flex justify-between items-center py-1.5 text-xs font-sans hover:text-white cursor-pointer group transition-colors">
+        <div className="flex justify-between items-center py-1.5 text-xs font-sans hover:text-text-main cursor-pointer group transition-colors">
           <div className="flex items-center gap-3">
             <HelpCircle className="w-4.5 h-4.5 text-text-muted" />
             <span>Terms of Service Agreement</span>
           </div>
-          <ChevronRight className="w-4.5 h-4.5 text-text-muted group-hover:text-white transition-colors" />
+          <ChevronRight className="w-4.5 h-4.5 text-text-muted group-hover:text-text-main transition-colors" />
         </div>
       </div>
 
