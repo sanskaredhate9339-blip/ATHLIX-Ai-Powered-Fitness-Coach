@@ -115,7 +115,7 @@ CREATE POLICY "Users can view own foods" ON foods
     FOR SELECT USING (auth.uid()::text = user_id);
 
 CREATE POLICY "Users can insert own foods" ON foods
-    FOR INSERT WITH CHECK (auth.uid()::text = user_id);
+    FOR INSERT WITH CHECK (auth.uid()::text = user_id OR user_id IS NULL);
 
 CREATE POLICY "Users can update own foods" ON foods
     FOR UPDATE USING (auth.uid()::text = user_id);
@@ -128,7 +128,7 @@ CREATE POLICY "Users can view own weights" ON weights
     FOR SELECT USING (auth.uid()::text = user_id);
 
 CREATE POLICY "Users can insert own weights" ON weights
-    FOR INSERT WITH CHECK (auth.uid()::text = user_id);
+    FOR INSERT WITH CHECK (auth.uid()::text = user_id OR user_id IS NULL);
 
 CREATE POLICY "Users can update own weights" ON weights
     FOR UPDATE USING (auth.uid()::text = user_id);
@@ -141,7 +141,7 @@ CREATE POLICY "Users can view own habits" ON habits
     FOR SELECT USING (auth.uid()::text = user_id);
 
 CREATE POLICY "Users can insert own habits" ON habits
-    FOR INSERT WITH CHECK (auth.uid()::text = user_id);
+    FOR INSERT WITH CHECK (auth.uid()::text = user_id OR user_id IS NULL);
 
 CREATE POLICY "Users can update own habits" ON habits
     FOR UPDATE USING (auth.uid()::text = user_id);
@@ -154,7 +154,7 @@ CREATE POLICY "Users can view own habit_logs" ON habit_logs
     FOR SELECT USING (auth.uid()::text = user_id);
 
 CREATE POLICY "Users can insert own habit_logs" ON habit_logs
-    FOR INSERT WITH CHECK (auth.uid()::text = user_id);
+    FOR INSERT WITH CHECK (auth.uid()::text = user_id OR user_id IS NULL);
 
 CREATE POLICY "Users can update own habit_logs" ON habit_logs
     FOR UPDATE USING (auth.uid()::text = user_id);
@@ -167,7 +167,7 @@ CREATE POLICY "Users can view own workouts" ON workouts
     FOR SELECT USING (auth.uid()::text = user_id);
 
 CREATE POLICY "Users can insert own workouts" ON workouts
-    FOR INSERT WITH CHECK (auth.uid()::text = user_id);
+    FOR INSERT WITH CHECK (auth.uid()::text = user_id OR user_id IS NULL);
 
 CREATE POLICY "Users can update own workouts" ON workouts
     FOR UPDATE USING (auth.uid()::text = user_id);
@@ -180,7 +180,7 @@ CREATE POLICY "Users can view own chat_history" ON chat_history
     FOR SELECT USING (auth.uid()::text = user_id);
 
 CREATE POLICY "Users can insert own chat_history" ON chat_history
-    FOR INSERT WITH CHECK (auth.uid()::text = user_id);
+    FOR INSERT WITH CHECK (auth.uid()::text = user_id OR user_id IS NULL);
 
 CREATE POLICY "Users can update own chat_history" ON chat_history
     FOR UPDATE USING (auth.uid()::text = user_id);
