@@ -44,14 +44,14 @@ export const Chat: React.FC = () => {
   return (
     <div className="flex flex-col h-[calc(100vh-10rem)] max-w-4xl mx-auto glass-panel rounded-3xl overflow-hidden border border-border-custom shadow-premium relative">
       {/* Chat header */}
-      <div className="px-6 py-4 bg-white/5 border-b border-border-custom flex justify-between items-center z-10">
+      <div className="px-6 py-4 bg-bg-surface-alt border-b border-border-custom flex justify-between items-center z-10">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-primary/20 flex items-center justify-center text-primary-light relative shadow-premium">
             <Sparkles className="w-5.5 h-5.5 animate-pulse-glow" />
             <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-success rounded-full border border-bg-surface" />
           </div>
           <div>
-            <h3 className="font-heading font-bold text-sm text-white">Athlix Coach</h3>
+            <h3 className="font-heading font-bold text-sm text-text-main">Athlix Coach</h3>
             <span className="text-[10px] text-text-muted font-sans font-medium">Equipped with your fitness stats</span>
           </div>
         </div>
@@ -72,7 +72,7 @@ export const Chat: React.FC = () => {
         {chatHistory.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-8 max-w-md mx-auto my-auto">
             <MessageCircle className="w-12 h-12 text-primary-light mb-4 opacity-40" />
-            <h4 className="font-heading font-extrabold text-white text-base mb-2">Discuss with Athlix Coach</h4>
+            <h4 className="font-heading font-extrabold text-text-main text-base mb-2">Discuss with Athlix Coach</h4>
             <p className="text-xs text-text-muted mb-8 leading-relaxed">
               Ask anything about nutrition estimation, exercise techniques, custom workouts, or habit streaks.
             </p>
@@ -87,7 +87,7 @@ export const Chat: React.FC = () => {
                   onClick={() => handleChipClick(chip)}
                   className="p-3.5 rounded-2xl border border-border-custom hover:border-primary-light/30 bg-bg-app/20 hover:bg-primary/5 text-left text-text-muted hover:text-text-main text-xs font-medium flex items-center justify-between transition-all group"
                 >
-                  {chip} <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-white transition-colors" />
+                  {chip} <ArrowRight className="w-4 h-4 text-text-muted group-hover:text-text-main transition-colors" />
                 </button>
               ))}
             </div>
@@ -104,7 +104,7 @@ export const Chat: React.FC = () => {
                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border ${
                   isAI 
                     ? 'bg-primary/10 border-primary/25 text-primary-light' 
-                    : 'bg-white/5 border-white/5 text-accent'
+                    : 'bg-bg-surface-alt border-border-custom text-accent'
                 }`}>
                   {isAI ? <Sparkles className="w-4 h-4" /> : <User className="w-4 h-4" />}
                 </div>
@@ -113,7 +113,7 @@ export const Chat: React.FC = () => {
                 <div className={`p-4 rounded-3xl leading-relaxed whitespace-pre-wrap ${
                   isAI 
                     ? 'bg-bg-app/60 border border-border-custom text-text-main rounded-tl-sm' 
-                    : 'bg-primary text-white rounded-tr-sm shadow-premium'
+                    : 'bg-primary text-text-main rounded-tr-sm shadow-premium'
                 }`}>
                   {msg.text === '...' ? (
                     <div className="flex gap-1.5 py-1 px-2 items-center">
@@ -126,7 +126,7 @@ export const Chat: React.FC = () => {
                   )}
                   
                   {/* Timestamp */}
-                  <span className={`block text-[9px] mt-2 font-mono ${isAI ? 'text-text-muted' : 'text-white/60'}`}>
+                  <span className={`block text-[9px] mt-2 font-mono ${isAI ? 'text-text-muted' : 'text-text-muted/60'}`}>
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
@@ -140,7 +140,7 @@ export const Chat: React.FC = () => {
       {/* Input controller */}
       <form 
         onSubmit={handleSend}
-        className="p-4 bg-white/5 border-t border-border-custom flex gap-3 items-center z-10"
+        className="p-4 bg-bg-surface-alt border-t border-border-custom flex gap-3 items-center z-10"
       >
         <input
           type="text"
@@ -148,13 +148,13 @@ export const Chat: React.FC = () => {
           onChange={(e) => setInputText(e.target.value)}
           placeholder={isChatStreaming ? 'Coach is typing...' : 'Ask your AI fitness coach...'}
           disabled={isChatStreaming}
-          className="flex-1 px-4 py-3.5 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-xs font-sans focus:outline-none transition-all placeholder:text-text-muted/60 text-white"
+          className="flex-1 px-4 py-3.5 bg-bg-app border border-border-custom focus:border-primary rounded-2xl text-xs font-sans focus:outline-none transition-all placeholder:text-text-muted/60 text-text-main"
         />
 
         <button
           type="submit"
           disabled={!inputText.trim() || isChatStreaming}
-          className="p-3.5 rounded-2xl gradient-btn text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-glow"
+          className="p-3.5 rounded-2xl gradient-btn text-text-main disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-glow"
           aria-label="Send message"
         >
           {isChatStreaming ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
