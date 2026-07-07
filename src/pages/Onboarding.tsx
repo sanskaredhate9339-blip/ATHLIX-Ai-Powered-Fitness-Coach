@@ -149,12 +149,16 @@ export const Onboarding: React.FC = () => {
     setUnitSystem(nextSystem);
 
     if (nextSystem === 'imperial') {
-      // Sync cm to ft/in
-      const totalInches = height / 2.54;
-      setHeightFt(Math.floor(totalInches / 12));
-      setHeightIn(Math.round(totalInches % 12));
-      // Sync kg to lbs
-      setWeightLbs(Math.round(weight * 2.20462));
+      // Sync cm to ft/in - only if height is defined
+      if (height) {
+        const totalInches = height / 2.54;
+        setHeightFt(Math.floor(totalInches / 12));
+        setHeightIn(Math.round(totalInches % 12));
+      }
+      // Sync kg to lbs - only if weight is defined
+      if (weight) {
+        setWeightLbs(Math.round(weight * 2.20462));
+      }
     } else {
       // Sync ft/in to cm
       const totalCm = (heightFt * 12 + heightIn) * 2.54;

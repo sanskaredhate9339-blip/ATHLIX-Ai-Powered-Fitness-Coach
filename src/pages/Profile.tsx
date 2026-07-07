@@ -72,8 +72,9 @@ export const Profile: React.FC = () => {
     setUnitSystem(unitSystem === 'metric' ? 'imperial' : 'metric');
   };
 
-  // Convert height
-  const formatHeight = (cm: number) => {
+  // Convert height - safely handles undefined by returning placeholder
+  const formatHeight = (cm: number | undefined) => {
+    if (!cm) return 'Not provided';
     if (unitSystem === 'metric') return `${cm} cm`;
     const totalInches = cm / 2.54;
     const ft = Math.floor(totalInches / 12);
@@ -153,7 +154,7 @@ export const Profile: React.FC = () => {
           <div className="p-4 rounded-2xl bg-bg-app/40 border border-border-custom flex flex-col gap-1.5">
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Height</span>
             <span className="font-heading font-bold text-sm text-white block">
-              {profile.height ? formatHeight(profile.height) : 'Not provided'}
+              {formatHeight(profile.height)}
             </span>
           </div>
 

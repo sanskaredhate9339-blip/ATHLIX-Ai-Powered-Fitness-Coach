@@ -373,16 +373,22 @@ export const ai = {
 - Ask about **form tips** for squats or deadlifts.
 - Ask me to write a **short workout circuit** right here.`;
       } else if (lowerMsg.includes('protein') || lowerMsg.includes('eat') || lowerMsg.includes('nutrition') || lowerMsg.includes('diet')) {
-        const targetProtein = Math.round(profile.weight * 2);
-        responseText = `For your goal of **${profile.goal}**, hitting your macronutrients is key.\n\n### Recommended Protein Target:\n- **${targetProtein}g of protein daily** (calculated at ~2g per kg of body weight).\n\n### Top High-Protein Sources:\n1. **Animal-based:** Chicken Breast (31g/100g), Wild Salmon (25g/100g), Egg Whites, Lean Beef.\n2. **Plant-based:** Tempeh (20g/100g), Lentils (9g/100g), Greek Yogurt, Whey/Plant Protein Isolate.\n\nDo you want me to suggest a full day meal plan?`;
+        // Validate that weight is defined before calculating protein target
+        const targetProtein = profile.weight ? Math.round(profile.weight * 2) : null;
+        responseText = `For your goal of **${profile.goal}**, hitting your macronutrients is key.\n\n### Recommended Protein Target:\n${targetProtein ? `- **${targetProtein}g of protein daily** (calculated at ~2g per kg of body weight).` : '- Complete your profile with your weight to get a personalized protein target.'}\n\n### Top High-Protein Sources:\n1. **Animal-based:** Chicken Breast (31g/100g), Wild Salmon (25g/100g), Egg Whites, Lean Beef.\n2. **Plant-based:** Tempeh (20g/100g), Lentils (9g/100g), Greek Yogurt, Whey/Plant Protein Isolate.\n\nDo you want me to suggest a full day meal plan?`;
       } else if (lowerMsg.includes('workout') || lowerMsg.includes('plan') || lowerMsg.includes('exercise') || lowerMsg.includes('schedule')) {
         responseText = `Since your experience level is **${profile.experience_level}** using **${profile.available_equipment.join(', ')}**, we want to ensure you get structured workouts.\n\nI recommend utilizing our **Workout Planner** tab to generate a full weekly plan, but here is a quick **15-minute home burner** you can do right now:\n\n- **Jump Squats:** 3 sets × 15 reps (Rest 45s)\n- **Standard Push-Ups:** 3 sets × Max reps (Rest 45s)\n- **Walking Lunges:** 3 sets × 12 reps per leg (Rest 45s)\n- **Plank Hold:** 3 sets × 45s (Rest 30s)\n\nMake sure to log these in your dashboard!`;
       } else if (lowerMsg.includes('squat') || lowerMsg.includes('deadlift') || lowerMsg.includes('pushup') || lowerMsg.includes('form')) {
         responseText = `Good form prevents injury and maximizes muscle loading!\n\nFor **Squats**:\n1. Keep your feet shoulder-width, toes out.\n2. Sit back in your hips, keeping your heels flat. Don't let your knees cave in!\n3. Squat down to parallel depth.\n\nFeel free to try our **Camera Form Analysis** feature under the **More** menu to get real-time feedback through your camera!`;
       } else if (lowerMsg.includes('weight') || lowerMsg.includes('fat') || lowerMsg.includes('bmi')) {
-        const heightM = profile.height / 100;
-        const bmi = (profile.weight / (heightM * heightM)).toFixed(1);
-        responseText = `Your current BMI is **${bmi}**, placing you in the *healthy weight* range.\n\nSince your goal is **${profile.goal}**, we want to track your weight trends gradually:\n- **Muscle Gain:** Aim to increase weight by 0.5–1kg per month to minimize fat storage.\n- **Fat Loss:** Aim for a weight drop of 0.5kg per week by maintaining a minor caloric deficit.\n\nMake sure to log your weight under the **Weight** tab regularly to see your progress chart!`;
+        // Validate that height and weight are defined before calculating BMI
+        if (!profile.height || !profile.weight) {
+          responseText = `To calculate your BMI and provide personalized weight tracking advice, please complete your onboarding by adding your height and weight in your profile settings.\n\nSince your goal is **${profile.goal}**, tracking your weight trends is important:\n- **Muscle Gain:** Aim to increase weight by 0.5–1kg per month to minimize fat storage.\n- **Fat Loss:** Aim for a weight drop of 0.5kg per week by maintaining a minor caloric deficit.\n\nMake sure to log your weight under the **Weight** tab regularly to see your progress chart!`;
+        } else {
+          const heightM = profile.height / 100;
+          const bmi = (profile.weight / (heightM * heightM)).toFixed(1);
+          responseText = `Your current BMI is **${bmi}**, placing you in the *healthy weight* range.\n\nSince your goal is **${profile.goal}**, we want to track your weight trends gradually:\n- **Muscle Gain:** Aim to increase weight by 0.5–1kg per month to minimize fat storage.\n- **Fat Loss:** Aim for a weight drop of 0.5kg per week by maintaining a minor caloric deficit.\n\nMake sure to log your weight under the **Weight** tab regularly to see your progress chart!`;
+        }
       } else {
         responseText = `That is an excellent question! When focusing on **${profile.goal}**, consistency is the single most important factor.\n\nRemember to stay hydrated (aim for 8+ glasses of water), hit your sleep target (7-9 hours), and stick to your workout days preference of **${profile.workout_days_preference} days per week**.\n\nIs there a specific detail about exercises, nutrition, or recover habits you would like to explore further?`;
       }
