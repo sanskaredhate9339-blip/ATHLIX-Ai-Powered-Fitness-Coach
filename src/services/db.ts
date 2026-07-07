@@ -438,7 +438,12 @@ export const db = {
           .insert([{ ...food, user_id: user.id }])
           .select()
           .single();
-        if (data && !error) return data as FoodLog;
+        if (error) {
+          console.error('Supabase addFood error:', error);
+          // Fall back to localStorage on error
+        } else if (data) {
+          return data as FoodLog;
+        }
       }
     }
 
@@ -452,8 +457,13 @@ export const db = {
     if (isSupabaseConfigured && supabase) {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase.from('foods').delete().eq('id', id).eq('user_id', user.id);
-        return;
+        const { error } = await supabase.from('foods').delete().eq('id', id).eq('user_id', user.id);
+        if (error) {
+          console.error('Supabase deleteFood error:', error);
+          // Fall back to localStorage on error
+        } else {
+          return;
+        }
       }
     }
     const allFoods = getLocal<FoodLog[]>('athlix_foods', SEED_FOODS);
@@ -492,7 +502,12 @@ export const db = {
           .insert([{ ...entry, user_id: user.id }])
           .select()
           .single();
-        if (data && !error) return data as WeightLog;
+        if (error) {
+          console.error('Supabase addWeight error:', error);
+          // Fall back to localStorage on error
+        } else if (data) {
+          return data as WeightLog;
+        }
       }
     }
 
@@ -553,7 +568,12 @@ export const db = {
           .insert([{ name, icon, user_id: user.id }])
           .select()
           .single();
-        if (data && !error) return data as Habit;
+        if (error) {
+          console.error('Supabase addCustomHabit error:', error);
+          // Fall back to localStorage on error
+        } else if (data) {
+          return data as Habit;
+        }
       }
     }
 
@@ -644,10 +664,15 @@ export const db = {
     if (isSupabaseConfigured && supabase) {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase
+        const { error } = await supabase
           .from('workouts')
           .insert([{ ...plan, user_id: user.id }]);
-        return;
+        if (error) {
+          console.error('Supabase saveWorkoutPlan error:', error);
+          // Fall back to localStorage on error
+        } else {
+          return;
+        }
       }
     }
     const plans = getLocal<WorkoutPlan[]>('athlix_workout_plans', [SEED_WORKOUT_PLAN]);
@@ -708,9 +733,15 @@ export const db = {
     if (isSupabaseConfigured && supabase) {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase
+        const { error } = await supabase
           .from('chat_history')
           .insert([{ sender: msg.sender, text: msg.text, user_id: user.id }]);
+        if (error) {
+          console.error('Supabase saveChatMessage error:', error);
+          // Fall back to localStorage on error
+        } else {
+          return newMsg;
+        }
       }
     }
 
