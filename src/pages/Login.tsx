@@ -63,7 +63,7 @@ export const Login: React.FC = () => {
       <div className="w-full max-w-md glass-panel p-8 rounded-3xl z-10 transition-all duration-300">
         <div className="flex flex-col items-center mb-8">
           <Link to="/" className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl gradient-btn flex items-center justify-center font-heading font-extrabold text-lg tracking-wider text-white shadow-glow">
+            <div className="w-10 h-10 rounded-xl gradient-btn flex items-center justify-center font-heading font-extrabold text-lg tracking-wider text-text-main shadow-glow">
               A
             </div>
             <span className="font-heading font-extrabold text-xl tracking-wide bg-gradient-to-r from-primary-light to-accent bg-clip-text text-transparent">
@@ -169,7 +169,7 @@ export const Login: React.FC = () => {
         <button
           onClick={handleGoogleLogin}
           disabled={isSubmitting || !isSupabaseConfigured}
-          className="w-full py-3.5 rounded-2xl border border-border-custom hover:bg-white/5 text-sm font-bold text-slate-300 flex items-center justify-center gap-3 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3.5 rounded-2xl border border-border-custom hover:bg-bg-surface-alt text-sm font-bold text-text-muted flex items-center justify-center gap-3 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           title={!isSupabaseConfigured ? 'Google SSO requires Supabase configuration' : ''}
         >
           {/* Flat Google logo */}
