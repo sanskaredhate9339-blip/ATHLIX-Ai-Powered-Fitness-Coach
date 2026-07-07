@@ -163,13 +163,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
-            redirectTo: window.location.origin
+            redirectTo: `${window.location.origin}/auth/callback`,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'consent',
+            }
           }
         });
-        if (error) throw error;
+        if (error) {
+          console.error('Google OAuth error:', error);
+          throw error;
+        }
       } else {
         throw new Error('Google SSO requires Supabase configuration. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.');
       }
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
