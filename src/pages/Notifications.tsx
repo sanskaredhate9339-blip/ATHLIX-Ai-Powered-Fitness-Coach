@@ -48,9 +48,9 @@ export const Notifications: React.FC = () => {
               key={n.id}
               onClick={() => !n.read && readNotification(n.id)}
               className={`glass-panel p-4.5 rounded-3xl flex items-start gap-4 transition-all relative overflow-hidden ${
-                !n.read 
-                  ? 'border-primary/30 bg-primary/5 cursor-pointer hover:bg-primary/10' 
-                  : 'border-border-custom hover:bg-white/5'
+                !n.read
+                  ? 'border-primary/30 bg-primary/5 cursor-pointer hover:bg-primary/10'
+                  : 'border-border-custom hover:bg-bg-surface-alt'
               }`}
             >
               {/* Highlight bar for unread item */}
@@ -60,9 +60,9 @@ export const Notifications: React.FC = () => {
 
               {/* Icon container */}
               <div className={`p-2.5 rounded-xl border shrink-0 ${
-                !n.read 
-                  ? 'bg-primary/10 border-primary/20' 
-                  : 'bg-white/5 border-white/5 text-text-muted'
+                !n.read
+                  ? 'bg-primary/10 border-primary/20'
+                  : 'bg-bg-surface-alt border-border-custom text-text-muted'
               }`}>
                 {getNotifIcon(n.type)}
               </div>
@@ -70,7 +70,7 @@ export const Notifications: React.FC = () => {
               {/* Text descriptions */}
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start gap-2">
-                  <h4 className="text-xs font-extrabold text-white leading-normal truncate">{n.title}</h4>
+                  <h4 className="text-xs font-extrabold text-text-main leading-normal truncate">{n.title}</h4>
                   <span className="text-[9px] text-text-muted font-mono whitespace-nowrap">
                     {new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
