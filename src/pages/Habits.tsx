@@ -91,7 +91,7 @@ export const Habits: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Current Streak</span>
-            <span className="font-heading font-extrabold text-lg text-white mt-0.5 block">{currentStreak} Days</span>
+            <span className="font-heading font-extrabold text-lg text-text-main mt-0.5 block">{currentStreak} Days</span>
             <span className="text-[9px] text-text-muted block mt-1">Keep training to lock it!</span>
           </div>
         </div>
@@ -103,7 +103,7 @@ export const Habits: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Best Streak Achievement</span>
-            <span className="font-heading font-extrabold text-lg text-white mt-0.5 block">{bestStreak} Days</span>
+            <span className="font-heading font-extrabold text-lg text-text-main mt-0.5 block">{bestStreak} Days</span>
             <span className="text-[9px] text-text-muted block mt-1">Record milestone reached!</span>
           </div>
         </div>
@@ -115,7 +115,7 @@ export const Habits: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Completed Today</span>
-            <span className="font-heading font-extrabold text-lg text-white mt-0.5 block">
+            <span className="font-heading font-extrabold text-lg text-text-main mt-0.5 block">
               {habitLogs.filter(l => l.completed).length} / {habits.length}
             </span>
             <span className="text-[9px] text-text-muted block mt-1">Streaking metrics active</span>
@@ -159,7 +159,7 @@ export const Habits: React.FC = () => {
                       onClick={() => toggleHabitStatus(habit.id)}
                       className={`w-11 h-11 rounded-2xl flex items-center justify-center border transition-all ${
                         isCompleted
-                          ? 'bg-success border-success text-white'
+                          ? 'bg-success border-success text-text-main'
                           : 'border-border-custom hover:border-primary-light text-text-muted hover:text-text-main'
                       }`}
                       aria-label={`Toggle habit ${habit.name}`}
@@ -168,7 +168,7 @@ export const Habits: React.FC = () => {
                     </button>
 
                     <div>
-                      <h4 className="font-heading font-bold text-sm text-white">{habit.name}</h4>
+                      <h4 className="font-heading font-bold text-sm text-text-main">{habit.name}</h4>
                       <span className="text-[10px] text-text-muted block mt-0.5">
                         {isCompleted ? 'Goal checked off today ✓' : 'Daily Goal pending'}
                       </span>
@@ -206,7 +206,7 @@ export const Habits: React.FC = () => {
             {past30Days.map((date, idx) => (
               <div 
                 key={idx}
-                className={`w-8.5 h-8.5 rounded-lg flex items-center justify-center text-[10px] font-semibold text-white/90 ${getDayCompletionIntensity(date)}`}
+                className={`w-8.5 h-8.5 rounded-lg flex items-center justify-center text-[10px] font-semibold text-text-main/90 ${getDayCompletionIntensity(date)}`}
                 title={`${date.toLocaleDateString()}`}
               >
                 {date.getDate()}
@@ -230,7 +230,7 @@ export const Habits: React.FC = () => {
 
       {/* Add Custom Habit Modal */}
       {addModalOpen && (
-        <div className="fixed inset-0 z-50 bg-[#09090E]/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-bg-app/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="w-full max-w-md glass-panel p-6 rounded-3xl relative animate-pulse-glow-once">
             <button
               onClick={() => setAddModalOpen(false)}
@@ -239,25 +239,25 @@ export const Habits: React.FC = () => {
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="font-heading font-extrabold text-xl text-white mb-2">Add Habit</h3>
+            <h3 className="font-heading font-extrabold text-xl text-text-main mb-2">Add Habit</h3>
             <p className="text-xs text-text-muted mb-6">Create a daily checkpoint goal</p>
 
             <form onSubmit={handleCreateHabit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-300">Habit Name</label>
+                <label className="text-xs font-semibold text-text-muted">Habit Name</label>
                 <input
                   type="text"
                   required
                   value={newHabitName}
                   onChange={(e) => setNewHabitName(e.target.value)}
                   placeholder="e.g. Read 10 Pages, Drink Green Tea..."
-                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-white"
+                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-text-main"
                 />
               </div>
 
               {/* Icon select */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-300">Select Icon Category</label>
+                <label className="text-xs font-semibold text-text-muted">Select Icon Category</label>
                 <div className="grid grid-cols-3 gap-2">
                   {iconList.map((ic) => (
                     <button
@@ -267,7 +267,7 @@ export const Habits: React.FC = () => {
                       className={`p-3 rounded-xl border flex flex-col items-center gap-1.5 text-xs font-semibold transition-all ${
                         newHabitIcon === ic.name
                           ? 'border-primary bg-primary/10 text-primary-light'
-                          : 'border-border-custom hover:bg-white/5 text-text-muted hover:text-text-main'
+                          : 'border-border-custom hover:bg-bg-surface-alt text-text-muted hover:text-text-main'
                       }`}
                     >
                       {renderHabitIcon(ic.name)}
