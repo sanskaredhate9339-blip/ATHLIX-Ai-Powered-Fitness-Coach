@@ -309,7 +309,7 @@ export const Dashboard: React.FC = () => {
                   </button>
                   <button
                     onClick={() => navigate('/form-analysis')}
-                    className="py-3 px-4 rounded-2xl border border-border-custom hover:bg-white/5 text-xs font-bold text-slate-300"
+                    className="py-3 px-4 rounded-2xl border border-border-custom hover:bg-bg-surface-alt text-xs font-bold text-text-muted"
                   >
                     Analyze Form
                   </button>
@@ -336,13 +336,13 @@ export const Dashboard: React.FC = () => {
                 <h3 className="font-heading font-bold text-sm text-text-muted uppercase tracking-wider">
                   Weight Progression
                 </h3>
-                <span className="text-xs font-semibold text-white mt-1 block">
+                <span className="text-xs font-semibold text-text-main mt-1 block">
                   Current: {profile?.weight ? formatWeight(profile.weight) : '--'}
                 </span>
               </div>
               <button 
                 onClick={() => setWeightModalOpen(true)}
-                className="p-2 rounded-xl border border-border-custom hover:bg-white/5 text-primary-light transition-colors"
+                className="p-2 rounded-xl border border-border-custom hover:bg-bg-surface-alt text-primary-light transition-colors"
                 aria-label="Log weight"
               >
                 <Plus className="w-5 h-5" />
@@ -416,7 +416,7 @@ export const Dashboard: React.FC = () => {
                       className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition-all ${
                         isDone
                           ? 'bg-success/15 border-success/30 text-success shadow-premium shadow-success/5'
-                          : 'border-border-custom hover:bg-white/5 text-text-muted hover:text-text-main'
+                          : 'border-border-custom hover:bg-bg-surface-alt text-text-muted hover:text-text-main'
                       }`}
                     >
                       {renderHabitIcon(habit.name === 'Workout Session' ? 'Dumbbell' : habit.name.includes('Water') ? 'Droplet' : habit.name.includes('Protein') ? 'Apple' : habit.name.includes('Sleep') ? 'Moon' : habit.name.includes('Walking') ? 'Footprints' : 'Activity')}
@@ -431,7 +431,7 @@ export const Dashboard: React.FC = () => {
             
             <Link 
               to="/habits" 
-              className="py-3 bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl text-center text-xs font-bold text-slate-300 flex items-center justify-center gap-1.5 transition-all"
+              className="py-3 bg-bg-surface-alt hover:bg-bg-surface border border-border-custom rounded-2xl text-center text-xs font-bold text-text-muted flex items-center justify-center gap-1.5 transition-all"
             >
               Configure Habits <ChevronRight className="w-4 h-4 text-text-muted" />
             </Link>
@@ -444,21 +444,21 @@ export const Dashboard: React.FC = () => {
             </h3>
             <div className="flex justify-between items-center mb-5">
               <div>
-                <span className="font-heading font-extrabold text-2xl text-white">
+                <span className="font-heading font-extrabold text-2xl text-text-main">
                   {bmiData.bmi || '--'}
                 </span>
                 <span className={`text-xs font-semibold ml-2.5 ${bmiData.color}`}>
                   {bmiData.category}
                 </span>
               </div>
-              <span className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-text-muted">
+              <span className="w-8 h-8 rounded-full bg-bg-surface-alt border border-border-custom flex items-center justify-center text-text-muted">
                 <Heart className="w-4.5 h-4.5 text-accent" />
               </span>
             </div>
 
             {/* Slider track for category ranges */}
             <div className="w-full">
-              <div className="relative w-full h-2.5 bg-white/5 rounded-full overflow-hidden flex">
+              <div className="relative w-full h-2.5 bg-bg-surface-alt rounded-full overflow-hidden flex">
                 <div className="h-full bg-accent" style={{ width: '18.5%' }} />
                 <div className="h-full bg-success" style={{ width: '25%' }} />
                 <div className="h-full bg-warning" style={{ width: '25%' }} />
@@ -518,7 +518,7 @@ export const Dashboard: React.FC = () => {
 
       {/* Weight Log Modal */}
       {weightModalOpen && (
-        <div className="fixed inset-0 z-50 bg-[#09090E]/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-bg-app/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="w-full max-w-md glass-panel p-6 rounded-3xl relative animate-pulse-glow-once">
             <button
               onClick={() => setWeightModalOpen(false)}
@@ -527,12 +527,12 @@ export const Dashboard: React.FC = () => {
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="font-heading font-extrabold text-xl text-white mb-2">Record Weight</h3>
+            <h3 className="font-heading font-extrabold text-xl text-text-main mb-2">Record Weight</h3>
             <p className="text-xs text-text-muted mb-6">Log weight to update your tracker progression</p>
 
             <form onSubmit={handleSaveWeight} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-300">Weight ({weightUnit})</label>
+                <label className="text-xs font-semibold text-text-muted">Weight ({weightUnit})</label>
                 <input
                   type="number"
                   step="0.1"
@@ -540,30 +540,30 @@ export const Dashboard: React.FC = () => {
                   value={newWeight}
                   onChange={(e) => setNewWeight(e.target.value)}
                   placeholder="e.g. 78.5"
-                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-white"
+                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-text-main"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-300">Body Fat % (Optional)</label>
+                <label className="text-xs font-semibold text-text-muted">Body Fat % (Optional)</label>
                 <input
                   type="number"
                   step="0.1"
                   value={newBodyFat}
                   onChange={(e) => setNewBodyFat(e.target.value)}
                   placeholder="e.g. 18.2"
-                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-white"
+                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-text-main"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-300">Notes (Optional)</label>
+                <label className="text-xs font-semibold text-text-muted">Notes (Optional)</label>
                 <textarea
                   value={newWeightNotes}
                   onChange={(e) => setNewWeightNotes(e.target.value)}
                   placeholder="Notes about calorie shifts, hydration level..."
                   rows={2}
-                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-white resize-none"
+                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary text-text-main resize-none"
                 />
               </div>
 
