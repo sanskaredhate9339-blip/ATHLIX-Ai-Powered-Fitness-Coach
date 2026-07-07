@@ -25,9 +25,10 @@ export const isSupabaseConfigured = supabaseUrl !== '' && supabaseAnonKey !== ''
 
 // Log environment variables in development (masked)
 if (import.meta.env.DEV) {
-  console.log('Athlix: Supabase Configuration')
-  console.log('URL:', supabaseUrl)
-  console.log('Anon Key:', supabaseAnonKey.slice(0, 8) + '...' + supabaseAnonKey.slice(-4))
+  console.log('[Supabase] Configuration')
+  console.log('[Supabase] URL:', supabaseUrl)
+  console.log('[Supabase] Anon Key:', supabaseAnonKey.slice(0, 8) + '...' + supabaseAnonKey.slice(-4))
+  console.log('[Supabase] Storage: Using localStorage (Safari ITP compatible)')
 }
 
 if (!isSupabaseConfigured) {
@@ -37,6 +38,18 @@ if (!isSupabaseConfigured) {
   );
 }
 
+// Configure Supabase client for Safari ITP compatibility
+// Using localStorage explicitly to avoid Safari's Intelligent Tracking Prevention
+// which can clear cookies/sessionStorage but preserves localStorage
 export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        storage: window.localStorage,
+        storageKey: 'athlix-supabase-auth',
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        flowType: 'pkce', // Use PKCE flow for better mobile/Safari compatibility
+      }
+    })
   : null

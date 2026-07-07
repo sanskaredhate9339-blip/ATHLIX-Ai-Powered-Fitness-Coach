@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFitness } from '../context/FitnessContext';
 import Webcam from 'react-webcam';
@@ -14,6 +14,8 @@ export const NutritionLog: React.FC = () => {
   // Webcam states
   const [webcamActive, setWebcamActive] = useState(false);
   const webcamRef = useRef<Webcam>(null);
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
 
   // Core Flow States
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -34,10 +36,53 @@ export const NutritionLog: React.FC = () => {
   const [logDate, setLogDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [manualMode, setManualMode] = useState(false);
 
+  // Enumerate available cameras
+  useEffect(() => {
+    const getDevices = async () => {
+      try {
+        const mediaDevices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = mediaDevices.filter(device => device.kind === 'videoinput');
+        setDevices(videoDevices);
+        console.log('[Camera] Available video devices:', videoDevices.length);
+      } catch (error) {
+        console.error('[Camera] Error enumerating devices:', error);
+      }
+    };
+    getDevices();
+  }, []);
+
+  // Cleanup camera on unmount
+  useEffect(() => {
+    return () => {
+      if (webcamRef.current && webcamRef.current.stream) {
+        console.log('[Camera] Cleaning up camera stream on unmount');
+        webcamRef.current.stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+
   const startWebcam = () => {
+    console.log('[Camera] Starting webcam with facingMode:', facingMode);
     setWebcamActive(true);
     setImagePreview(null);
     setAnalysisResult(null);
+  };
+
+  const stopWebcam = () => {
+    console.log('[Camera] Stopping webcam');
+    if (webcamRef.current && webcamRef.current.stream) {
+      webcamRef.current.stream.getTracks().forEach(track => track.stop());
+    }
+    setWebcamActive(false);
+  };
+
+  const switchCamera = () => {
+    console.log('[Camera] Switching camera');
+    // Stop current stream before switching
+    if (webcamRef.current && webcamRef.current.stream) {
+      webcamRef.current.stream.getTracks().forEach(track => track.stop());
+    }
+    setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
   };
 
   const capturePhoto = () => {
@@ -157,8 +202,30 @@ export const NutritionLog: React.FC = () => {
                     ref={webcamRef}
                     screenshotFormat="image/webp"
                     className="w-full h-full object-cover"
+                    videoConstraints={{
+                      facingMode: facingMode,
+                      width: { ideal: 1280 },
+                      height: { ideal: 720 }
+                    }}
+                    onUserMedia={(stream) => {
+                      console.log('[Camera] User media granted, stream active:', stream.active);
+                    }}
+                    onUserMediaError={(error) => {
+                      console.error('[Camera] User media error:', error);
+                    }}
                   />
                   <div className="absolute inset-0 border border-primary/20 pointer-events-none rounded-3xl" />
+                  
+                  {/* Camera switch button for mobile */}
+                  {devices.length > 1 && (
+                    <button
+                      onClick={switchCamera}
+                      className="absolute top-4 right-4 z-20 p-3 bg-black/50 backdrop-blur-sm rounded-full text-white hover:bg-black/70 transition-colors"
+                      aria-label="Switch camera"
+                    >
+                      <RefreshCw className="w-5 h-5" />
+                    </button>
+                  )}
                 </div>
                 <div className="flex gap-4">
                   <button
@@ -168,7 +235,7 @@ export const NutritionLog: React.FC = () => {
                     Capture Plate
                   </button>
                   <button
-                    onClick={() => setWebcamActive(false)}
+                    onClick={stopWebcam}
                     className="px-6 py-3.5 rounded-2xl border border-border-custom hover:bg-white/5 text-xs font-bold text-text-muted hover:text-text-main"
                   >
                     Cancel

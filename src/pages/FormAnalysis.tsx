@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import { 
   CameraOff, Volume2, VolumeX, Play, Square, 
-  RotateCcw, ShieldAlert, CheckCircle, Sparkles
+  RotateCcw, ShieldAlert, CheckCircle, Sparkles, RefreshCw
 } from 'lucide-react';
 
 export const FormAnalysis: React.FC = () => {
@@ -13,6 +13,9 @@ export const FormAnalysis: React.FC = () => {
   const [selectedExercise, setSelectedExercise] = useState('Squat');
   const [cameraActive, setCameraActive] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
+  const webcamRef = useRef<Webcam>(null);
   
   // Real-time tracking metrics
   const [repCount, setRepCount] = useState(0);
@@ -32,6 +35,31 @@ export const FormAnalysis: React.FC = () => {
       if (exName.toLowerCase().includes('push')) setSelectedExercise('Push-up');
     }
   }, [location.state]);
+
+  // Enumerate available cameras
+  useEffect(() => {
+    const getDevices = async () => {
+      try {
+        const mediaDevices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = mediaDevices.filter(device => device.kind === 'videoinput');
+        setDevices(videoDevices);
+        console.log('[FormAnalysis] Available video devices:', videoDevices.length);
+      } catch (error) {
+        console.error('[FormAnalysis] Error enumerating devices:', error);
+      }
+    };
+    getDevices();
+  }, []);
+
+  // Cleanup camera on unmount
+  useEffect(() => {
+    return () => {
+      if (webcamRef.current && webcamRef.current.stream) {
+        console.log('[FormAnalysis] Cleaning up camera stream on unmount');
+        webcamRef.current.stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
 
   // Handle simulated joint tracking canvas rendering
   useEffect(() => {
@@ -192,6 +220,23 @@ export const FormAnalysis: React.FC = () => {
     setWarningMessage('Stand straight to begin');
   };
 
+  const switchCamera = () => {
+    console.log('[FormAnalysis] Switching camera');
+    // Stop current stream before switching
+    if (webcamRef.current && webcamRef.current.stream) {
+      webcamRef.current.stream.getTracks().forEach(track => track.stop());
+    }
+    setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
+  };
+
+  const stopCamera = () => {
+    console.log('[FormAnalysis] Stopping camera');
+    if (webcamRef.current && webcamRef.current.stream) {
+      webcamRef.current.stream.getTracks().forEach(track => track.stop());
+    }
+    setCameraActive(false);
+  };
+
   return (
     <div className="flex flex-col gap-6">
       {/* Exercise Selector */}
@@ -231,8 +276,20 @@ export const FormAnalysis: React.FC = () => {
               <>
                 <Webcam
                   audio={false}
+                  ref={webcamRef}
                   className="w-full h-full object-cover opacity-60"
                   screenshotFormat="image/webp"
+                  videoConstraints={{
+                    facingMode: facingMode,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                  }}
+                  onUserMedia={(stream) => {
+                    console.log('[FormAnalysis] User media granted, stream active:', stream.active);
+                  }}
+                  onUserMediaError={(error) => {
+                    console.error('[FormAnalysis] User media error:', error);
+                  }}
                 />
                 {/* Canvas Overlay for joint nodes */}
                 <canvas
@@ -241,6 +298,17 @@ export const FormAnalysis: React.FC = () => {
                   height={360}
                   className="absolute inset-0 w-full h-full object-cover z-10"
                 />
+                
+                {/* Camera switch button for mobile */}
+                {devices.length > 1 && (
+                  <button
+                    onClick={switchCamera}
+                    className="absolute top-4 right-4 z-20 p-3 bg-black/50 backdrop-blur-sm rounded-full text-white hover:bg-black/70 transition-colors"
+                    aria-label="Switch camera"
+                  >
+                    <RefreshCw className="w-5 h-5" />
+                  </button>
+                )}
               </>
             ) : (
               <div className="text-center p-8 flex flex-col items-center">
@@ -270,7 +338,7 @@ export const FormAnalysis: React.FC = () => {
           {cameraActive && (
             <div className="flex gap-4">
               <button
-                onClick={() => setCameraActive(false)}
+                onClick={stopCamera}
                 className="flex-1 py-3.5 rounded-2xl bg-danger/10 hover:bg-danger/20 border border-danger/25 text-xs font-bold text-danger flex items-center justify-center gap-2 transition-all"
               >
                 <Square className="w-4 h-4" /> Stop Camera Feed
