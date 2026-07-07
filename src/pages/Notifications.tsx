@@ -9,6 +9,8 @@ export const Notifications: React.FC = () => {
 
   const handleMarkAllRead = async () => {
     await readAllNotifications();
+    // Navigate back to dashboard after marking all as read
+    window.history.back();
   };
 
   const getNotifIcon = (type: string) => {

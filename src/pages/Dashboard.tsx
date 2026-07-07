@@ -209,7 +209,7 @@ export const Dashboard: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Calories Consumed</span>
-            <span className="font-heading font-extrabold text-lg text-white mt-0.5 block">{totalCalsConsumed} kcal</span>
+            <span className="font-heading font-extrabold text-lg text-text-main mt-0.5 block">{totalCalsConsumed} kcal</span>
             <span className="text-[9px] text-text-muted block mt-1">Goal: {calorieGoal || '--'} kcal</span>
           </div>
         </div>
@@ -221,7 +221,7 @@ export const Dashboard: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Active Burn</span>
-            <span className="font-heading font-extrabold text-lg text-white mt-0.5 block">{calsBurnedWorkout} kcal</span>
+            <span className="font-heading font-extrabold text-lg text-text-main mt-0.5 block">{calsBurnedWorkout} kcal</span>
             <span className="text-[9px] text-text-muted block mt-1">Total: {totalCalsBurned} kcal</span>
           </div>
         </div>
@@ -233,7 +233,7 @@ export const Dashboard: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Protein Logged</span>
-            <span className="font-heading font-extrabold text-lg text-white mt-0.5 block">{totalProteinConsumed}g</span>
+            <span className="font-heading font-extrabold text-lg text-text-main mt-0.5 block">{totalProteinConsumed}g</span>
             <span className="text-[9px] text-text-muted block mt-1">Goal: {proteinGoal || '--'}g</span>
           </div>
         </div>
@@ -245,7 +245,7 @@ export const Dashboard: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Water Intake</span>
-            <span className="font-heading font-extrabold text-lg text-white mt-0.5 block">
+            <span className="font-heading font-extrabold text-lg text-text-main mt-0.5 block">
               {completedHabitsCount > 0 ? `${completedHabitsCount}/${habitsCount}` : '0/8'} Glasses
             </span>
             <span className="text-[9px] text-text-muted block mt-1">Goal: {waterGoal} glasses</span>
@@ -268,7 +268,7 @@ export const Dashboard: React.FC = () => {
               <div className="flex flex-col gap-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-heading font-extrabold text-lg text-white">
+                    <h4 className="font-heading font-extrabold text-lg text-text-main">
                       {activeWorkoutToday.muscle_group}
                     </h4>
                     <p className="text-xs text-text-muted mt-1 font-sans">
@@ -288,11 +288,11 @@ export const Dashboard: React.FC = () => {
                 <div className="w-full">
                   <div className="flex justify-between items-center text-xs text-text-muted mb-1.5">
                     <span>Workout Completion</span>
-                    <span className="font-bold text-white">
+                    <span className="font-bold text-text-main">
                       {activeWorkoutToday.completed ? '100%' : '0%'}
                     </span>
                   </div>
-                  <div className="w-full h-2.5 bg-white/5 rounded-full overflow-hidden">
+                  <div className="w-full h-2.5 bg-bg-surface-alt rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
                       style={{ width: activeWorkoutToday.completed ? '100%' : '5%' }}

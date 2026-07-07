@@ -79,9 +79,42 @@ export const Onboarding: React.FC = () => {
   ];
 
   const handleNext = async () => {
+    // Validate current step before proceeding
+    const validationError = validateCurrentStep();
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
+    
     // Save current step data to database
     await saveStepData();
     if (step < 5) setStep(step + 1);
+  };
+
+  const validateCurrentStep = (): string | null => {
+    switch (step) {
+      case 1:
+        if (!name || name.trim() === '') return 'Please enter your name';
+        if (!age || age < 13 || age > 100) return 'Please enter a valid age (13-100)';
+        if (!gender) return 'Please select your gender';
+        break;
+      case 2:
+        if (!height || height < 50 || height > 300) return 'Please enter a valid height';
+        if (!weight || weight < 20 || weight > 300) return 'Please enter a valid weight';
+        break;
+      case 3:
+        if (!goal) return 'Please select your fitness goal';
+        break;
+      case 4:
+        if (!experience) return 'Please select your experience level';
+        if (equipment.length === 0) return 'Please select at least one equipment option';
+        break;
+      case 5:
+        if (workoutDays < 1 || workoutDays > 7) return 'Please select valid workout days (1-7)';
+        if (duration < 15 || duration > 180) return 'Please select a valid session duration';
+        break;
+    }
+    return null;
   };
 
   const saveStepData = async () => {
@@ -169,7 +202,14 @@ export const Onboarding: React.FC = () => {
   };
 
   const handleFinish = async () => {
-    // Validation
+    // Final validation of all steps
+    const validationError = validateCurrentStep();
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
+
+    // Validate all required fields
     if (!name || !age || !gender || !height || !weight || !goal || !experience || equipment.length === 0) {
       alert('Please fill in all required fields');
       return;
@@ -216,7 +256,7 @@ export const Onboarding: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090E] flex flex-col justify-center items-center p-6 relative overflow-hidden text-text-main">
+    <div className="min-h-screen bg-bg-app flex flex-col justify-center items-center p-6 relative overflow-hidden text-text-main">
       {/* Glow backgrounds */}
       <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-primary/5 rounded-full blur-[80px]" />
       <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-accent/5 rounded-full blur-[80px]" />
@@ -232,7 +272,7 @@ export const Onboarding: React.FC = () => {
               <div 
                 key={i} 
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i <= step ? 'w-6 bg-primary' : 'w-2 bg-white/5'
+                  i <= step ? 'w-6 bg-primary' : 'w-2 bg-border-custom'
                 }`}
               />
             ))}
@@ -250,12 +290,12 @@ export const Onboarding: React.FC = () => {
           {step === 1 && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-5">
               <div>
-                <h2 className="font-heading font-extrabold text-2xl text-white">Let's meet you</h2>
+                <h2 className="font-heading font-extrabold text-2xl text-text-main">Let's meet you</h2>
                 <p className="text-xs text-text-muted mt-1">Tell us a bit about who you are</p>
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-300 ml-1">Preferred Name</label>
+                <label className="text-xs font-semibold text-text-muted ml-1">Preferred Name</label>
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                   <input
@@ -263,13 +303,13 @@ export const Onboarding: React.FC = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Alex"
-                    className="w-full pl-12 pr-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-white"
+                    className="w-full pl-12 pr-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-text-main"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-300 ml-1">Age (Years)</label>
+                <label className="text-xs font-semibold text-text-muted ml-1">Age (Years)</label>
                 <div className="relative">
                   <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                   <input
@@ -279,13 +319,13 @@ export const Onboarding: React.FC = () => {
                     value={age || ''}
                     onChange={(e) => setAge(e.target.value ? parseInt(e.target.value) : undefined)}
                     placeholder="25"
-                    className="w-full pl-12 pr-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-white"
+                    className="w-full pl-12 pr-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-text-main"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-300 ml-1">Gender Identification</label>
+                <label className="text-xs font-semibold text-text-muted ml-1">Gender Identification</label>
                 <div className="grid grid-cols-3 gap-3">
                   {['Male', 'Female', 'Non-binary'].map((g) => (
                     <button
@@ -294,7 +334,7 @@ export const Onboarding: React.FC = () => {
                       className={`py-3.5 rounded-2xl border text-xs font-bold transition-all ${
                         gender === g
                           ? 'border-primary bg-primary/10 text-primary-light'
-                          : 'border-border-custom hover:bg-white/5 text-text-muted hover:text-text-main'
+                          : 'border-border-custom hover:bg-bg-surface-alt text-text-muted hover:text-text-main'
                       }`}
                     >
                       {g}
@@ -309,13 +349,13 @@ export const Onboarding: React.FC = () => {
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-6">
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="font-heading font-extrabold text-2xl text-white">Body Metrics</h2>
+                  <h2 className="font-heading font-extrabold text-2xl text-text-main">Body Metrics</h2>
                   <p className="text-xs text-text-muted mt-1">This helps us calculate your BMI and caloric base</p>
                 </div>
                 <button
                   type="button"
                   onClick={handleUnitToggle}
-                  className="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-primary-light uppercase tracking-wider hover:bg-white/10 transition-all"
+                  className="px-3.5 py-1.5 rounded-xl bg-bg-surface-alt border border-border-custom text-[10px] font-bold text-primary-light uppercase tracking-wider hover:bg-bg-surface transition-all"
                 >
                   Unit: {unitSystem === 'metric' ? 'Metric' : 'Imperial'}
                 </button>
@@ -324,18 +364,18 @@ export const Onboarding: React.FC = () => {
               {unitSystem === 'metric' ? (
                 <>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-300 ml-1">Height (cm)</label>
+                    <label className="text-xs font-semibold text-text-muted ml-1">Height (cm)</label>
                     <input
                       type="number"
                       min="100"
                       max="250"
                       value={height || ''}
                       onChange={(e) => setHeight(e.target.value ? parseInt(e.target.value) : undefined)}
-                      className="w-full px-4 py-3.5 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-white"
+                      className="w-full px-4 py-3.5 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-text-main"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-300 ml-1">Weight (kg)</label>
+                    <label className="text-xs font-semibold text-text-muted ml-1">Weight (kg)</label>
                     <input
                       type="number"
                       step="0.1"
@@ -343,14 +383,14 @@ export const Onboarding: React.FC = () => {
                       max="300"
                       value={weight || ''}
                       onChange={(e) => setWeight(e.target.value ? parseFloat(e.target.value) : undefined)}
-                      className="w-full px-4 py-3.5 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-white"
+                      className="w-full px-4 py-3.5 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-text-main"
                     />
                   </div>
                 </>
               ) : (
                 <>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-300 ml-1">Height (Feet / Inches)</label>
+                    <label className="text-xs font-semibold text-text-muted ml-1">Height (Feet / Inches)</label>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="relative">
                         <input
@@ -359,7 +399,7 @@ export const Onboarding: React.FC = () => {
                           max="8"
                           value={heightFt}
                           onChange={(e) => setHeightFt(parseInt(e.target.value) || 5)}
-                          className="w-full px-4 py-3.5 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-white text-center"
+                          className="w-full px-4 py-3.5 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-text-main text-center"
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-text-muted">ft</span>
                       </div>
@@ -370,21 +410,21 @@ export const Onboarding: React.FC = () => {
                           max="11"
                           value={heightIn}
                           onChange={(e) => setHeightIn(parseInt(e.target.value) || 0)}
-                          className="w-full px-4 py-3.5 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-white text-center"
+                          className="w-full px-4 py-3.5 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-text-main text-center"
                         />
                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-text-muted">in</span>
                       </div>
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-slate-300 ml-1">Weight (lbs)</label>
+                    <label className="text-xs font-semibold text-text-muted ml-1">Weight (lbs)</label>
                     <input
                       type="number"
                       min="50"
                       max="600"
                       value={weightLbs}
                       onChange={(e) => setWeightLbs(parseInt(e.target.value) || 150)}
-                      className="w-full px-4 py-3.5 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-white"
+                      className="w-full px-4 py-3.5 bg-bg-app border border-border-custom rounded-2xl text-sm font-sans focus:outline-none focus:border-primary transition-all text-text-main"
                     />
                   </div>
                 </>
@@ -395,7 +435,7 @@ export const Onboarding: React.FC = () => {
           {step === 3 && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-5">
               <div>
-                <h2 className="font-heading font-extrabold text-2xl text-white">Fitness Goal</h2>
+                <h2 className="font-heading font-extrabold text-2xl text-text-main">Fitness Goal</h2>
                 <p className="text-xs text-text-muted mt-1">Select your primary fitness objective</p>
               </div>
 
@@ -424,12 +464,12 @@ export const Onboarding: React.FC = () => {
           {step === 4 && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-5">
               <div>
-                <h2 className="font-heading font-extrabold text-2xl text-white">Experience & Gear</h2>
+                <h2 className="font-heading font-extrabold text-2xl text-text-main">Experience & Gear</h2>
                 <p className="text-xs text-text-muted mt-1">Tell us your background and what you train with</p>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-slate-300 ml-1">Experience Level</label>
+                <label className="text-xs font-semibold text-text-muted ml-1">Experience Level</label>
                 <div className="grid grid-cols-3 gap-3">
                   {(['Beginner', 'Intermediate', 'Advanced'] as const).map((exp) => (
                     <button
@@ -438,7 +478,7 @@ export const Onboarding: React.FC = () => {
                       className={`py-3.5 rounded-2xl border text-xs font-bold transition-all ${
                         experience === exp
                           ? 'border-primary bg-primary/10 text-primary-light'
-                          : 'border-border-custom hover:bg-white/5 text-text-muted hover:text-text-main'
+                          : 'border-border-custom hover:bg-bg-surface-alt text-text-muted hover:text-text-main'
                       }`}
                     >
                       {exp}
@@ -448,7 +488,7 @@ export const Onboarding: React.FC = () => {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-slate-300 ml-1">Available Equipment</label>
+                <label className="text-xs font-semibold text-text-muted ml-1">Available Equipment</label>
                 <div className="flex flex-wrap gap-2.5 max-h-[160px] overflow-y-auto pr-1">
                   {equipments.map((eq) => {
                     const selected = equipment.includes(eq.name);
@@ -459,7 +499,7 @@ export const Onboarding: React.FC = () => {
                         className={`px-4 py-2.5 rounded-2xl border text-xs font-semibold transition-all ${
                           selected
                             ? 'border-accent bg-accent/10 text-accent'
-                            : 'border-border-custom hover:bg-white/5 text-text-muted hover:text-text-main'
+                            : 'border-border-custom hover:bg-bg-surface-alt text-text-muted hover:text-text-main'
                         }`}
                       >
                         {eq.name}
@@ -474,13 +514,13 @@ export const Onboarding: React.FC = () => {
           {step === 5 && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-6">
               <div>
-                <h2 className="font-heading font-extrabold text-2xl text-white">Preferences</h2>
+                <h2 className="font-heading font-extrabold text-2xl text-text-main">Preferences</h2>
                 <p className="text-xs text-text-muted mt-1">Set your commitment splits and schedule</p>
               </div>
 
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center px-1">
-                  <label className="text-xs font-semibold text-slate-300">Workout Days (Per Week)</label>
+                  <label className="text-xs font-semibold text-text-muted">Workout Days (Per Week)</label>
                   <span className="text-xs font-bold text-primary-light">{workoutDays} days</span>
                 </div>
                 <input
@@ -489,7 +529,7 @@ export const Onboarding: React.FC = () => {
                   max="7"
                   value={workoutDays}
                   onChange={(e) => setWorkoutDays(parseInt(e.target.value))}
-                  className="w-full accent-primary h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer"
+                  className="w-full accent-primary h-1.5 bg-bg-surface-alt rounded-lg appearance-none cursor-pointer"
                 />
                 <div className="flex justify-between text-[10px] text-text-muted font-sans px-1">
                   <span>1 day</span>
@@ -500,22 +540,22 @@ export const Onboarding: React.FC = () => {
 
               <div className="flex flex-col gap-2 mt-2">
                 <div className="flex justify-between items-center px-1">
-                  <label className="text-xs font-semibold text-slate-300">Session Duration</label>
+                  <label className="text-xs font-semibold text-text-muted">Session Duration</label>
                   <span className="text-xs font-bold text-accent">{duration} minutes</span>
                 </div>
                 <input
                   type="range"
                   min="15"
-                  max="120"
-                  step="5"
+                  max="180"
+                  step="15"
                   value={duration}
                   onChange={(e) => setDuration(parseInt(e.target.value))}
-                  className="w-full accent-accent h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer"
+                  className="w-full accent-primary h-1.5 bg-bg-surface-alt rounded-lg appearance-none cursor-pointer"
                 />
                 <div className="flex justify-between text-[10px] text-text-muted font-sans px-1">
                   <span>15 min</span>
                   <span>60 min</span>
-                  <span>120 min</span>
+                  <span>180 min</span>
                 </div>
               </div>
             </motion.div>
