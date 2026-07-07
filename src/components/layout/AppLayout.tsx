@@ -23,19 +23,16 @@ export const AppLayout: React.FC = () => {
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
-    console.log('[AppLayout] Not authenticated, redirecting to login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Redirect to onboarding if authenticated but onboarding is incomplete
   if (profile && !profile.onboarded && location.pathname !== '/onboarding') {
-    console.log('[AppLayout] Onboarding incomplete, redirecting to onboarding');
     return <Navigate to="/onboarding" replace />;
   }
 
   // If onboarding page but already onboarded, redirect to dashboard
   if (profile && profile.onboarded && location.pathname === '/onboarding') {
-    console.log('[AppLayout] Already onboarded, redirecting to dashboard');
     return <Navigate to="/dashboard" replace />;
   }
 

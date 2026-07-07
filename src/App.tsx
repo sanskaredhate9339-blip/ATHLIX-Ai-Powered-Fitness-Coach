@@ -39,7 +39,6 @@ import { NotFound } from './pages/NotFound';
 const AuthCallback = () => {
   useEffect(() => {
     const handleOAuthCallback = async () => {
-      console.log('[AuthCallback] Starting OAuth callback handling');
       
       try {
         if (!supabase) {
@@ -50,7 +49,6 @@ const AuthCallback = () => {
 
         // Supabase handles OAuth session exchange automatically from URL hash/params
         // We need to wait for the session to be established
-        console.log('[AuthCallback] Waiting for session to be established...');
         
         // Try to get session with retries for slower mobile networks
         let session = null;
@@ -62,14 +60,12 @@ const AuthCallback = () => {
           
           if (data.session) {
             session = data.session;
-            console.log('[AuthCallback] Session established on attempt', i + 1);
             break;
           }
           
           // Wait before retry (exponential backoff)
           if (i < 4) {
             const delay = 500 * Math.pow(2, i);
-            console.log(`[AuthCallback] No session yet, retrying in ${delay}ms...`);
             await new Promise(resolve => setTimeout(resolve, delay));
           }
         }
@@ -81,9 +77,6 @@ const AuthCallback = () => {
         }
 
         if (session) {
-          console.log('[AuthCallback] Session established successfully');
-          console.log('[AuthCallback] User ID:', session.user.id);
-          console.log('[AuthCallback] User email:', session.user.email);
           
           // Wait a moment for auth state to propagate
           await new Promise(resolve => setTimeout(resolve, 500));
@@ -91,7 +84,6 @@ const AuthCallback = () => {
           // Navigate to dashboard (auth context will handle onboarding check)
           window.location.href = '/dashboard';
         } else {
-          console.error('[AuthCallback] No session after retries');
           window.location.href = '/login?error=no_session';
         }
       } catch (err) {

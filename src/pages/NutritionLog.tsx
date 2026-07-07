@@ -43,7 +43,6 @@ export const NutritionLog: React.FC = () => {
         const mediaDevices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = mediaDevices.filter(device => device.kind === 'videoinput');
         setDevices(videoDevices);
-        console.log('[Camera] Available video devices:', videoDevices.length);
       } catch (error) {
         console.error('[Camera] Error enumerating devices:', error);
       }
@@ -55,21 +54,18 @@ export const NutritionLog: React.FC = () => {
   useEffect(() => {
     return () => {
       if (webcamRef.current && webcamRef.current.stream) {
-        console.log('[Camera] Cleaning up camera stream on unmount');
         webcamRef.current.stream.getTracks().forEach(track => track.stop());
       }
     };
   }, []);
 
   const startWebcam = () => {
-    console.log('[Camera] Starting webcam with facingMode:', facingMode);
     setWebcamActive(true);
     setImagePreview(null);
     setAnalysisResult(null);
   };
 
   const stopWebcam = () => {
-    console.log('[Camera] Stopping webcam');
     if (webcamRef.current && webcamRef.current.stream) {
       webcamRef.current.stream.getTracks().forEach(track => track.stop());
     }
@@ -77,7 +73,6 @@ export const NutritionLog: React.FC = () => {
   };
 
   const switchCamera = () => {
-    console.log('[Camera] Switching camera');
     // Stop current stream before switching
     if (webcamRef.current && webcamRef.current.stream) {
       webcamRef.current.stream.getTracks().forEach(track => track.stop());
@@ -206,9 +201,6 @@ export const NutritionLog: React.FC = () => {
                       facingMode: facingMode,
                       width: { ideal: 1280 },
                       height: { ideal: 720 }
-                    }}
-                    onUserMedia={(stream) => {
-                      console.log('[Camera] User media granted, stream active:', stream.active);
                     }}
                     onUserMediaError={(error) => {
                       console.error('[Camera] User media error:', error);

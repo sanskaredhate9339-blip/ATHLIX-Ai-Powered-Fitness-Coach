@@ -348,42 +348,34 @@ if (typeof window !== 'undefined') {
 export const db = {
   // --- USER PROFILE FUNCTIONS ---
   async fetchUserProfile(): Promise<UserProfile | null> {
-    console.log('[DB] Fetching user profile...');
     if (isSupabaseConfigured && supabase) {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        console.log('[DB] User authenticated, fetching profile from Supabase for user ID:', user.id);
         const { data, error } = await supabase
           .from('users')
           .select('*')
           .eq('id', user.id)
           .maybeSingle();
         if (data && !error) {
-          console.log('[DB] Profile fetched successfully, onboarded:', data.onboarded);
           return data as UserProfile;
         }
         // If no profile exists, return null - this triggers onboarding
         if (error && error.code === 'PGRST116') {
-          console.log('[DB] No profile found in database (PGRST116)');
           return null;
         }
         if (error) {
           console.error('[DB] Error fetching profile:', error);
         }
       } else {
-        console.log('[DB] No authenticated user found');
       }
     }
-    console.log('[DB] Using local fallback for profile');
     return getLocal<UserProfile | null>('athlix_profile', null);
   },
 
   async updateUserProfile(profile: Partial<UserProfile>): Promise<UserProfile> {
-    console.log('[DB] Updating user profile, onboarded:', profile.onboarded);
     if (isSupabaseConfigured && supabase) {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        console.log('[DB] Upserting profile to Supabase for user ID:', user.id);
         // Use upsert to either insert or update
         const { data, error } = await supabase
           .from('users')

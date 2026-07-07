@@ -43,7 +43,6 @@ export const FormAnalysis: React.FC = () => {
         const mediaDevices = await navigator.mediaDevices.enumerateDevices();
         const videoDevices = mediaDevices.filter(device => device.kind === 'videoinput');
         setDevices(videoDevices);
-        console.log('[FormAnalysis] Available video devices:', videoDevices.length);
       } catch (error) {
         console.error('[FormAnalysis] Error enumerating devices:', error);
       }
@@ -55,7 +54,6 @@ export const FormAnalysis: React.FC = () => {
   useEffect(() => {
     return () => {
       if (webcamRef.current && webcamRef.current.stream) {
-        console.log('[FormAnalysis] Cleaning up camera stream on unmount');
         webcamRef.current.stream.getTracks().forEach(track => track.stop());
       }
     };
@@ -221,7 +219,6 @@ export const FormAnalysis: React.FC = () => {
   };
 
   const switchCamera = () => {
-    console.log('[FormAnalysis] Switching camera');
     // Stop current stream before switching
     if (webcamRef.current && webcamRef.current.stream) {
       webcamRef.current.stream.getTracks().forEach(track => track.stop());
@@ -230,7 +227,6 @@ export const FormAnalysis: React.FC = () => {
   };
 
   const stopCamera = () => {
-    console.log('[FormAnalysis] Stopping camera');
     if (webcamRef.current && webcamRef.current.stream) {
       webcamRef.current.stream.getTracks().forEach(track => track.stop());
     }
@@ -283,9 +279,6 @@ export const FormAnalysis: React.FC = () => {
                     facingMode: facingMode,
                     width: { ideal: 1280 },
                     height: { ideal: 720 }
-                  }}
-                  onUserMedia={(stream) => {
-                    console.log('[FormAnalysis] User media granted, stream active:', stream.active);
                   }}
                   onUserMediaError={(error) => {
                     console.error('[FormAnalysis] User media error:', error);
