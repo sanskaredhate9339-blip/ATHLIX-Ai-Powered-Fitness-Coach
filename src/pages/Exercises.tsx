@@ -39,7 +39,7 @@ export const Exercises: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search exercises (e.g. Bench Press, Squats)..."
-            className="w-full pl-11 pr-4 py-3.5 bg-bg-app border border-border-custom rounded-2xl text-xs font-sans focus:outline-none focus:border-primary text-white"
+            className="w-full pl-11 pr-4 py-3.5 bg-bg-app border border-border-custom rounded-2xl text-xs font-sans focus:outline-none focus:border-primary text-text-main"
           />
           {searchQuery && (
             <button
@@ -60,7 +60,7 @@ export const Exercises: React.FC = () => {
               className={`px-4 py-2.5 rounded-xl border text-[10px] font-bold transition-all whitespace-nowrap ${
                 selectedMuscle === muscle
                   ? 'border-primary bg-primary/10 text-primary-light'
-                  : 'border-border-custom hover:bg-white/5 text-text-muted hover:text-text-main'
+                  : 'border-border-custom hover:bg-bg-surface-alt text-text-muted hover:text-text-main'
               }`}
             >
               {muscle}
@@ -79,17 +79,17 @@ export const Exercises: React.FC = () => {
               className="glass-panel p-5 rounded-3xl text-left border border-border-custom hover:border-primary/20 transition-all flex items-center justify-between group"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center text-primary-light group-hover:scale-105 transition-transform">
+                <div className="w-12 h-12 rounded-2xl bg-bg-surface-alt border border-border-custom flex items-center justify-center text-primary-light group-hover:scale-105 transition-transform">
                   <Dumbbell className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-heading font-bold text-sm text-white">{ex.name}</h4>
+                  <h4 className="font-heading font-bold text-sm text-text-main">{ex.name}</h4>
                   <span className="text-[10px] text-text-muted font-sans font-medium mt-1 block">
                     {ex.muscle_group} &bull; {ex.equipment}
                   </span>
                 </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-text-muted group-hover:text-white transition-colors" />
+              <ChevronRight className="w-5 h-5 text-text-muted group-hover:text-text-main transition-colors" />
             </button>
           ))
         ) : (
@@ -104,7 +104,7 @@ export const Exercises: React.FC = () => {
 
       {/* Detailed Modal view */}
       {selectedExercise && (
-        <div className="fixed inset-0 z-50 bg-[#09090E]/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-bg-app/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="w-full max-w-lg glass-panel p-6 rounded-3xl max-h-[85vh] overflow-y-auto relative animate-pulse-glow-once">
             <button
               onClick={() => setSelectedExercise(null)}
@@ -119,7 +119,7 @@ export const Exercises: React.FC = () => {
                 <Dumbbell className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-heading font-extrabold text-lg text-white">{selectedExercise.name}</h3>
+                <h3 className="font-heading font-extrabold text-lg text-text-main">{selectedExercise.name}</h3>
                 <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block mt-0.5">
                   Difficulty: {selectedExercise.difficulty}
                 </span>
@@ -127,17 +127,17 @@ export const Exercises: React.FC = () => {
             </div>
 
             <div className="flex flex-wrap gap-2 mb-6">
-              <span className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-slate-300">
+              <span className="px-3 py-1.5 rounded-xl bg-bg-surface-alt border border-border-custom text-[10px] font-bold text-text-muted">
                 Muscle Group: {selectedExercise.muscle_group}
               </span>
-              <span className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/5 text-[10px] font-bold text-slate-300">
+              <span className="px-3 py-1.5 rounded-xl bg-bg-surface-alt border border-border-custom text-[10px] font-bold text-text-muted">
                 Equipment: {selectedExercise.equipment}
               </span>
             </div>
 
             {/* Steps description */}
             <div className="mb-6">
-              <h4 className="text-xs font-extrabold text-white uppercase tracking-wider mb-2.5">
+              <h4 className="text-xs font-extrabold text-text-main uppercase tracking-wider mb-2.5">
                 Execution Steps
               </h4>
               <ol className="text-xs text-text-muted font-sans flex flex-col gap-2.5 list-decimal pl-4 leading-relaxed">
