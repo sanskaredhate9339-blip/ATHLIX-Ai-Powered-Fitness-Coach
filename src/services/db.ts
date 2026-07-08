@@ -422,20 +422,79 @@ export const db = {
             .eq('id', user.id)
             .maybeSingle();
           console.log('[DB] Supabase query result:', data, error);
+          
+          // If profile exists in Supabase, return it
           if (data && !error) {
             console.log('[DB] Returning profile from Supabase');
             return data as UserProfile;
           }
-          // If no profile exists in Supabase, check localStorage
-          if (error && error.code === 'PGRST116') {
-            console.log('[DB] No profile in Supabase, checking localStorage');
+          
+          // If no profile in Supabase (data is null), sync from localStorage
+          if (!data && !error) {
+            console.log('[DB] No profile in Supabase (null data), checking localStorage for sync');
             const localProfile = getLocalSafe<UserProfile | null>('athlix_profile', null);
             if (localProfile && localProfile.onboarded) {
+              console.log('[DB] Syncing local profile to Supabase');
+              try {
+                const { data: syncedData, error: syncError } = await supabase
+                  .from('users')
+                  .upsert({
+                    id: user.id,
+                    email: user.email,
+                    ...localProfile,
+                    updated_at: new Date().toISOString()
+                  })
+                  .select()
+                  .single();
+                if (syncedData && !syncError) {
+                  console.log('[DB] Successfully synced profile to Supabase');
+                  return syncedData as UserProfile;
+                }
+                if (syncError) {
+                  console.error('[DB] Error syncing profile:', syncError);
+                }
+              } catch (syncException) {
+                console.error('[DB] Exception during sync:', syncException);
+              }
               console.log('[DB] Using local profile as fallback');
               return localProfile;
             }
             return null;
           }
+          
+          // If no profile exists in Supabase (error case), check localStorage and sync
+          if (error && error.code === 'PGRST116') {
+            console.log('[DB] No profile in Supabase (error), checking localStorage for sync');
+            const localProfile = getLocalSafe<UserProfile | null>('athlix_profile', null);
+            if (localProfile && localProfile.onboarded) {
+              console.log('[DB] Syncing local profile to Supabase');
+              try {
+                const { data: syncedData, error: syncError } = await supabase
+                  .from('users')
+                  .upsert({
+                    id: user.id,
+                    email: user.email,
+                    ...localProfile,
+                    updated_at: new Date().toISOString()
+                  })
+                  .select()
+                  .single();
+                if (syncedData && !syncError) {
+                  console.log('[DB] Successfully synced profile to Supabase');
+                  return syncedData as UserProfile;
+                }
+                if (syncError) {
+                  console.error('[DB] Error syncing profile:', syncError);
+                }
+              } catch (syncException) {
+                console.error('[DB] Exception during sync:', syncException);
+              }
+              console.log('[DB] Using local profile as fallback');
+              return localProfile;
+            }
+            return null;
+          }
+          
           if (error) {
             console.error('[DB] Error fetching profile:', error);
             // If table doesn't exist, fall back to localStorage
