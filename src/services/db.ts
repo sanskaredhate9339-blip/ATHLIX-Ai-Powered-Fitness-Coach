@@ -422,6 +422,8 @@ export const db = {
     const current = getLocal<UserProfile | null>('athlix_profile', null);
     const updated = current ? { ...current, ...profile } : profile as UserProfile;
     setLocal('athlix_profile', updated);
+    // Also update localStorage directly to ensure persistence
+    localStorage.setItem('athlix_profile', JSON.stringify(updated));
     return updated;
   },
 

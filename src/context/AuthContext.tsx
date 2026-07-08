@@ -282,6 +282,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       onboarded: true
     });
     setProfile(updated);
+    // Force refresh from localStorage to ensure consistency
+    const refreshed = await db.fetchUserProfile();
+    setProfile(refreshed);
   };
 
   return (
