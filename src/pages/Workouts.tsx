@@ -7,6 +7,7 @@ import {
   Dumbbell, Sparkles, Clock, Play, Pause, RotateCcw, 
   CheckCircle, ChevronDown, ChevronUp, Save 
 } from 'lucide-react';
+import { SESSION_DURATION_OPTIONS } from '../constants/fitness';
 
 export const Workouts: React.FC = () => {
   const navigate = useNavigate();
@@ -23,14 +24,59 @@ export const Workouts: React.FC = () => {
   // Collapse state for My Plan day items
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>({});
 
+  // Helper for split recommendation
+  const getRecommendedSplit = (days: number): string => {
+    switch (days) {
+      case 1: return 'Full Body';
+      case 2: return 'Upper Lower';
+      case 3: return 'Push Pull Legs';
+      case 4: return 'Upper Lower';
+      case 5: return 'Push Pull Legs';
+      case 6: return 'Push Pull Legs';
+      case 7: return 'Athletic Performance';
+      default: return 'Full Body';
+    }
+  };
+
   // Generate form states
-  const [goal, setGoal] = useState(profile?.goal || 'Muscle Gain');
-  const [splitType, setSplitType] = useState('Push/Pull/Legs');
+  const [selectedGoals, setSelectedGoals] = useState<string[]>(() => {
+    if (profile?.goal) {
+      return profile.goal.split(', ').map(g => g.trim()).filter(Boolean);
+    }
+    return ['Muscle Gain'];
+  });
   const [daysPerWeek, setDaysPerWeek] = useState(4);
+  const [splitType, setSplitType] = useState(() => getRecommendedSplit(4));
   const [duration, setDuration] = useState(60);
   const [equipment, setEquipment] = useState<string[]>(profile?.available_equipment || ['Dumbbells']);
   const [experience, setExperience] = useState(profile?.experience_level || 'Intermediate');
   const [medical, setMedical] = useState('');
+  
+  const getOvertrainingWarnings = (): string[] => {
+    const exp = profile?.experience_level || 'Intermediate';
+    const warnings: string[] = [];
+    if (exp === 'Beginner') {
+      if (daysPerWeek >= 5 || duration >= 90) {
+        warnings.push('This workout volume may increase fatigue.');
+        warnings.push('You may be at higher injury risk.');
+        warnings.push('Recovery days are recommended.');
+      }
+    } else if (exp === 'Intermediate') {
+      if (daysPerWeek >= 6 || duration >= 120) {
+        warnings.push('This workout volume may increase fatigue.');
+        warnings.push('You may be at higher injury risk.');
+        warnings.push('Recovery days are recommended.');
+      }
+    } else if (exp === 'Advanced') {
+      if (daysPerWeek >= 7 && duration > 180) {
+        warnings.push('This workout volume may increase fatigue.');
+        warnings.push('You may be at higher injury risk.');
+        warnings.push('Recovery days are recommended.');
+      }
+    }
+    return warnings;
+  };
+  const overtrainingWarnings = getOvertrainingWarnings();
   
   // AI generation loader states
   const [isGenerating, setIsGenerating] = useState(false);
@@ -81,7 +127,7 @@ export const Workouts: React.FC = () => {
     setTempPlan(null);
     try {
       const plan = await generateWorkout({
-        goal,
+        goal: selectedGoals.join(', '),
         split_type: splitType,
         days_per_week: daysPerWeek,
         duration,
@@ -503,36 +549,41 @@ export const Workouts: React.FC = () => {
 
           {!tempPlan ? (
             <form onSubmit={handleGenerate} className="flex flex-col gap-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Goal */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-300">Goal objective</label>
-                  <select
-                    value={goal}
-                    onChange={(e) => setGoal(e.target.value)}
-                    className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-xs focus:outline-none focus:border-primary text-white"
-                  >
-                    <option value="Weight Loss">Weight Loss</option>
-                    <option value="Muscle Gain">Muscle Gain</option>
-                    <option value="Strength Training">Strength Training</option>
-                    <option value="Endurance">Endurance</option>
-                    <option value="General Fitness">General Fitness</option>
-                  </select>
-                </div>
-
-                {/* Split */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-slate-300">Workout Split</label>
-                  <select
-                    value={splitType}
-                    onChange={(e) => setSplitType(e.target.value)}
-                    className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-xs focus:outline-none focus:border-primary text-white"
-                  >
-                    <option value="Push/Pull/Legs">Push / Pull / Legs (PPL)</option>
-                    <option value="Upper/Lower">Upper / Lower</option>
-                    <option value="Full Body">Full Body Split</option>
-                    <option value="Arnold Split">Arnold Split</option>
-                  </select>
+              {/* Goal multi-select */}
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-semibold text-slate-300">Goal Objective (Select one or more)</label>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    'Fat Loss',
+                    'Muscle Gain',
+                    'Strength',
+                    'Endurance',
+                    'Athletic Performance',
+                    'Mobility',
+                    'General Fitness'
+                  ].map((g) => {
+                    const selected = selectedGoals.includes(g);
+                    return (
+                      <button
+                        key={g}
+                        type="button"
+                        onClick={() => {
+                          if (selected) {
+                            setSelectedGoals(prev => prev.filter(x => x !== g));
+                          } else {
+                            setSelectedGoals(prev => [...prev, g]);
+                          }
+                        }}
+                        className={`px-3 py-2 rounded-xl border text-[10px] font-semibold transition-all ${
+                          selected 
+                            ? 'border-primary bg-primary/10 text-primary-light font-bold' 
+                            : 'border-border-custom hover:bg-white/5 text-text-muted hover:text-text-main'
+                        }`}
+                      >
+                        {g}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -545,7 +596,11 @@ export const Workouts: React.FC = () => {
                     min="1"
                     max="7"
                     value={daysPerWeek}
-                    onChange={(e) => setDaysPerWeek(parseInt(e.target.value))}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value);
+                      setDaysPerWeek(val);
+                      setSplitType(getRecommendedSplit(val));
+                    }}
                     className="w-full accent-primary h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer mt-3"
                   />
                 </div>
@@ -555,15 +610,75 @@ export const Workouts: React.FC = () => {
                   <label className="text-xs font-semibold text-slate-300">Duration ({duration} minutes)</label>
                   <input
                     type="range"
-                    min="15"
-                    max="120"
-                    step="5"
-                    value={duration}
-                    onChange={(e) => setDuration(parseInt(e.target.value))}
+                    min="0"
+                    max={SESSION_DURATION_OPTIONS.length - 1}
+                    step="1"
+                    value={SESSION_DURATION_OPTIONS.indexOf(duration as any) !== -1 ? SESSION_DURATION_OPTIONS.indexOf(duration as any) : 4}
+                    onChange={(e) => {
+                      const selectedDur = SESSION_DURATION_OPTIONS[parseInt(e.target.value)];
+                      setDuration(selectedDur);
+                    }}
                     className="w-full accent-accent h-1.5 bg-white/5 rounded-lg appearance-none cursor-pointer mt-3"
                   />
                 </div>
               </div>
+
+              {/* Split selection */}
+              <div className="flex flex-col gap-1.5 relative">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-semibold text-slate-300">Workout Split</label>
+                  {splitType === getRecommendedSplit(daysPerWeek) && (
+                    <span className="text-[9px] font-extrabold text-accent bg-accent/10 border border-accent/25 px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">
+                      Recommended for You ⭐
+                    </span>
+                  )}
+                </div>
+                <select
+                  value={splitType}
+                  onChange={(e) => setSplitType(e.target.value)}
+                  className="w-full px-4 py-3 bg-bg-app border border-border-custom rounded-2xl text-xs focus:outline-none focus:border-primary text-white"
+                >
+                  {[
+                    'Full Body',
+                    'Upper Lower',
+                    'Push Pull Legs',
+                    'Bro Split',
+                    'Arnold Split',
+                    'Powerbuilding',
+                    'Strength Split',
+                    'Functional Training',
+                    'Hybrid Athlete',
+                    'Athletic Performance',
+                    'CrossFit Style',
+                    'Bodyweight Only',
+                    'Home Workout',
+                    'HIIT Focus',
+                    'Mobility Focus',
+                    'Custom Split'
+                  ].map((split) => {
+                    const isRec = split === getRecommendedSplit(daysPerWeek);
+                    return (
+                      <option key={split} value={split}>
+                        {split} {isRec ? ' (Recommended)' : ''}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {/* Overtraining Warnings */}
+              {overtrainingWarnings.length > 0 && (
+                <div className="p-4 rounded-2xl bg-warning/10 border border-warning/20 text-warning mt-1 flex flex-col gap-1.5">
+                  <h4 className="text-xs font-extrabold flex items-center gap-1.5">
+                    ⚠️ Overtraining Warning
+                  </h4>
+                  {overtrainingWarnings.map((w: string, index: number) => (
+                    <p key={index} className="text-[10px] font-sans font-semibold leading-relaxed">
+                      • {w}
+                    </p>
+                  ))}
+                </div>
+              )}
 
               {/* Equipment Multi-check */}
               <div className="flex flex-col gap-2">

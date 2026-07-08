@@ -236,3 +236,70 @@ CREATE INDEX IF NOT EXISTS idx_habits_user_id ON habits(user_id);
 CREATE INDEX IF NOT EXISTS idx_habit_logs_user_id ON habit_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_workouts_user_id ON workouts(user_id);
 CREATE INDEX IF NOT EXISTS idx_chat_history_user_id ON chat_history(user_id);
+
+-- Add missing columns to users table
+ALTER TABLE users ADD COLUMN IF NOT EXISTS activity_level TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS workout_settings JSONB;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS ai_settings JSONB;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS acknowledged_warnings TEXT[];
+
+-- Create notifications table if it doesn't exist
+CREATE TABLE IF NOT EXISTS notifications (
+    id TEXT PRIMARY KEY,
+    user_id TEXT,
+    type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    body TEXT NOT NULL,
+    timestamp TIMESTAMPTZ DEFAULT NOW(),
+    read BOOLEAN DEFAULT FALSE
+);
+
+-- Create calories_predictions table if it doesn't exist
+CREATE TABLE IF NOT EXISTS calories_predictions (
+    id TEXT PRIMARY KEY,
+    user_id TEXT,
+    age NUMERIC NOT NULL,
+    gender TEXT NOT NULL,
+    height NUMERIC NOT NULL,
+    weight NUMERIC NOT NULL,
+    bmi NUMERIC NOT NULL,
+    workout_type TEXT NOT NULL,
+    workout_duration NUMERIC NOT NULL,
+    steps NUMERIC NOT NULL,
+    heart_rate NUMERIC NOT NULL,
+    calories_consumed NUMERIC NOT NULL,
+    calories_burned NUMERIC NOT NULL,
+    confidence NUMERIC NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE calories_predictions ENABLE ROW LEVEL SECURITY;
+
+-- Notifications RLS Policies
+DROP POLICY IF EXISTS "Users can view own notifications" ON notifications;
+DROP POLICY IF EXISTS "Users can insert own notifications" ON notifications;
+DROP POLICY IF EXISTS "Users can update own notifications" ON notifications;
+DROP POLICY IF EXISTS "Users can delete own notifications" ON notifications;
+
+CREATE POLICY "Users can view own notifications" ON notifications FOR SELECT USING (auth.uid()::text = user_id);
+CREATE POLICY "Users can insert own notifications" ON notifications FOR INSERT WITH CHECK (auth.uid()::text = user_id OR user_id IS NULL);
+CREATE POLICY "Users can update own notifications" ON notifications FOR UPDATE USING (auth.uid()::text = user_id);
+CREATE POLICY "Users can delete own notifications" ON notifications FOR DELETE USING (auth.uid()::text = user_id);
+
+-- Calories Predictions RLS Policies
+DROP POLICY IF EXISTS "Users can view own predictions" ON calories_predictions;
+DROP POLICY IF EXISTS "Users can insert own predictions" ON calories_predictions;
+DROP POLICY IF EXISTS "Users can update own predictions" ON calories_predictions;
+DROP POLICY IF EXISTS "Users can delete own predictions" ON calories_predictions;
+
+CREATE POLICY "Users can view own predictions" ON calories_predictions FOR SELECT USING (auth.uid()::text = user_id);
+CREATE POLICY "Users can insert own predictions" ON calories_predictions FOR INSERT WITH CHECK (auth.uid()::text = user_id OR user_id IS NULL);
+CREATE POLICY "Users can update own predictions" ON calories_predictions FOR UPDATE USING (auth.uid()::text = user_id);
+CREATE POLICY "Users can delete own predictions" ON calories_predictions FOR DELETE USING (auth.uid()::text = user_id);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_predictions_user_id ON calories_predictions(user_id);
+

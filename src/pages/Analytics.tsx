@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFitness } from '../context/FitnessContext';
 import { useUnit } from '../context/UnitContext';
 import { useAuth } from '../context/AuthContext';
+import { db } from '../services/db';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, 
   PieChart, Pie, XAxis, YAxis, Tooltip, AreaChart, Area 
@@ -14,6 +15,97 @@ export const Analytics: React.FC = () => {
   const { profile } = useAuth();
   const { foods, weights, habitLogs, habits } = useFitness();
   const { convertWeight, weightUnit } = useUnit();
+
+  // ML Predictor States
+  const [workoutType, setWorkoutType] = useState('Cardio');
+  const [workoutDuration, setWorkoutDuration] = useState(45);
+  const [steps, setSteps] = useState(5000);
+  const [heartRate, setHeartRate] = useState(130);
+  const [caloriesConsumed, setCaloriesConsumed] = useState(2000);
+
+  const [isPredicting, setIsPredicting] = useState(false);
+  const [predictionResult, setPredictionResult] = useState<{ caloriesBurned: number; confidence: number } | null>(null);
+  const [predictionError, setPredictionError] = useState<string | null>(null);
+  const [predictionHistory, setPredictionHistory] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      if (db.fetchPredictions) {
+        try {
+          const hist = await db.fetchPredictions();
+          setPredictionHistory(hist);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+    loadHistory();
+  }, [predictionResult]);
+
+  const handlePredict = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsPredicting(true);
+    setPredictionError(null);
+    setPredictionResult(null);
+
+    const userAge = profile?.age || 25;
+    const userGender = profile?.gender || 'Male';
+    const userHeight = profile?.height || 175;
+    const userWeight = profile?.weight || 70;
+    const userBmi = userHeight > 0 ? (userWeight / ((userHeight / 100.0) ** 2)) : 22.9;
+
+    try {
+      const response = await fetch('http://localhost:5000/predict-calories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          age: userAge,
+          gender: userGender,
+          height: userHeight,
+          weight: userWeight,
+          bmi: parseFloat(userBmi.toFixed(2)),
+          workout_type: workoutType,
+          workout_duration: workoutDuration,
+          steps: steps,
+          heart_rate: heartRate,
+          calories_consumed: caloriesConsumed
+        }),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || 'Prediction service failed.');
+      }
+
+      const result = await response.json();
+      setPredictionResult(result);
+      
+      if (db.savePrediction) {
+        await db.savePrediction({
+          age: userAge,
+          gender: userGender,
+          height: userHeight,
+          weight: userWeight,
+          bmi: parseFloat(userBmi.toFixed(2)),
+          workout_type: workoutType,
+          workout_duration: workoutDuration,
+          steps: steps,
+          heart_rate: heartRate,
+          calories_consumed: caloriesConsumed,
+          calories_burned: result.caloriesBurned,
+          confidence: result.confidence
+        });
+      }
+
+    } catch (err: any) {
+      console.error('[Predict] Error:', err);
+      setPredictionError(err.message || 'Unable to connect to the prediction server. Please make sure the local ML server is running.');
+    } finally {
+      setIsPredicting(false);
+    }
+  };
 
   // Pie chart today macros breakdown
   const protein = foods.reduce((acc, f) => acc + f.protein, 0);
@@ -226,6 +318,137 @@ export const Analytics: React.FC = () => {
             <p className="text-[10px] text-text-muted leading-relaxed font-sans">
               Your calorie consistency index is higher this week (+12%). Maintain structural protein ratios above 140g daily to minimize muscle recovery times.
             </p>
+          </div>
+
+          {/* AI Calorie Burn Predictor Widget */}
+          <div className="glass-panel p-6 rounded-3xl flex flex-col gap-4">
+            <h3 className="font-heading font-bold text-sm text-text-muted uppercase tracking-wider">
+              ML Calorie Burn Predictor
+            </h3>
+            
+            <form onSubmit={handlePredict} className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                {/* Workout Type */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-semibold text-text-muted">Workout Type</label>
+                  <select
+                    value={workoutType}
+                    onChange={(e) => setWorkoutType(e.target.value)}
+                    className="px-3 py-2 bg-bg-app border border-border-custom rounded-xl text-text-main focus:outline-none focus:border-primary"
+                  >
+                    <option value="Cardio">Cardio</option>
+                    <option value="Strength">Strength</option>
+                    <option value="HIIT Focus">HIIT Focus</option>
+                    <option value="Yoga">Yoga</option>
+                    <option value="Running">Running</option>
+                    <option value="Cycling">Cycling</option>
+                  </select>
+                </div>
+
+                {/* Duration */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-semibold text-text-muted">Duration (mins)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="300"
+                    value={workoutDuration}
+                    onChange={(e) => setWorkoutDuration(parseInt(e.target.value) || 0)}
+                    className="px-3 py-2 bg-bg-app border border-border-custom rounded-xl text-text-main focus:outline-none focus:border-primary"
+                  />
+                </div>
+
+                {/* Steps */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-semibold text-text-muted">Steps Taken</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100000"
+                    value={steps}
+                    onChange={(e) => setSteps(parseInt(e.target.value) || 0)}
+                    className="px-3 py-2 bg-bg-app border border-border-custom rounded-xl text-text-main focus:outline-none focus:border-primary"
+                  />
+                </div>
+
+                {/* Heart Rate */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-semibold text-text-muted">Heart Rate (BPM)</label>
+                  <input
+                    type="number"
+                    min="40"
+                    max="220"
+                    value={heartRate}
+                    onChange={(e) => setHeartRate(parseInt(e.target.value) || 0)}
+                    className="px-3 py-2 bg-bg-app border border-border-custom rounded-xl text-text-main focus:outline-none focus:border-primary"
+                  />
+                </div>
+
+                {/* Calories Consumed */}
+                <div className="flex flex-col gap-1 col-span-2">
+                  <label className="text-[10px] font-semibold text-text-muted">Calories Consumed Today (kcal)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="10000"
+                    value={caloriesConsumed}
+                    onChange={(e) => setCaloriesConsumed(parseInt(e.target.value) || 0)}
+                    className="w-full px-3 py-2 bg-bg-app border border-border-custom rounded-xl text-text-main focus:outline-none focus:border-primary"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isPredicting}
+                className="w-full py-2.5 rounded-xl gradient-btn text-xs font-bold flex items-center justify-center gap-2"
+              >
+                {isPredicting ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-accent rounded-full animate-spin" />
+                    Calculating...
+                  </>
+                ) : (
+                  'Run ML Prediction'
+                )}
+              </button>
+            </form>
+
+            {/* Results Section */}
+            {predictionResult && (
+              <div className="p-4 rounded-2xl bg-success/15 border border-success/30 text-text-main flex flex-col gap-1.5 animate-pulse-glow-once">
+                <span className="text-[10px] font-bold text-success uppercase tracking-wider">Prediction Successful</span>
+                <div className="flex justify-between items-baseline mt-1">
+                  <span className="text-xs text-text-muted font-sans font-medium">Estimated Burn:</span>
+                  <span className="text-lg font-extrabold text-white font-mono">{predictionResult.caloriesBurned} kcal</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-text-muted font-sans font-medium">Confidence Score:</span>
+                  <span className="text-xs font-extrabold text-accent font-mono">{Math.round(predictionResult.confidence * 100)}%</span>
+                </div>
+              </div>
+            )}
+
+            {predictionError && (
+              <div className="p-3 rounded-2xl bg-danger/10 border border-danger/20 text-danger text-[10px] font-sans font-semibold leading-relaxed">
+                ⚠️ {predictionError}
+              </div>
+            )}
+            
+            {/* Short list of history */}
+            {predictionHistory.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <span className="text-[9px] font-bold text-text-muted uppercase tracking-wider">Recent Predictions</span>
+                <div className="flex flex-col gap-1.5 max-h-[100px] overflow-y-auto pr-1">
+                  {predictionHistory.slice(0, 3).map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center p-2 rounded-lg bg-bg-app border border-border-custom text-[10px]">
+                      <span className="font-semibold text-text-muted">{item.workout_type} ({item.workout_duration}m)</span>
+                      <span className="font-mono font-bold text-text-main">{item.calories_burned} kcal</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

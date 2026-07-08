@@ -84,105 +84,97 @@ export const ai = {
     const days: WorkoutDay[] = [];
     let dayCount = 0;
 
-    // Create splits based on user choice
-    if (split_type === 'Push/Pull/Legs') {
-      const splitSequence = [
+    let splitSequence: Array<{ name: string; muscles: string[] }> = [];
+    const normSplit = split_type.toLowerCase().replace('/', ' ').trim();
+
+    if (normSplit.includes('push pull legs')) {
+      splitSequence = [
         { name: 'Push (Chest, Shoulders, Triceps)', muscles: ['chest', 'shoulders', 'arms'] },
         { name: 'Pull (Back, Biceps)', muscles: ['back', 'arms'] },
         { name: 'Legs & Core', muscles: ['legs', 'core'] }
       ];
-
-      for (let i = 0; i < 7; i++) {
-        // Distribute workout days vs rest days
-        const shouldWork = dayCount < days_per_week && (i % 2 === 0 || i === 5);
-        if (shouldWork) {
-          const splitItem = splitSequence[dayCount % splitSequence.length];
-          const exercises: WorkoutExercise[] = [];
-          splitItem.muscles.forEach(m => {
-            exercises.push(...getExercisesByMuscle(m, 2));
-          });
-
-          days.push({
-            id: `day_${i}`,
-            dayIndex: i,
-            muscle_group: splitItem.name,
-            estimated_calories: Math.round(duration * 7.5),
-            difficulty: experience,
-            exercises: exercises.slice(0, 5) // limit to 5 exercises
-          });
-          dayCount++;
-        }
-      }
-    } else if (split_type === 'Upper/Lower') {
-      const splitSequence = [
+    } else if (normSplit.includes('upper lower')) {
+      splitSequence = [
         { name: 'Upper Body Focus', muscles: ['chest', 'back', 'shoulders', 'arms'] },
         { name: 'Lower Body & Core', muscles: ['legs', 'core'] }
       ];
-
-      for (let i = 0; i < 7; i++) {
-        const shouldWork = dayCount < days_per_week && (i === 0 || i === 1 || i === 3 || i === 4);
-        if (shouldWork) {
-          const splitItem = splitSequence[dayCount % splitSequence.length];
-          const exercises: WorkoutExercise[] = [];
-          splitItem.muscles.forEach(m => {
-            exercises.push(...getExercisesByMuscle(m, 2));
-          });
-
-          days.push({
-            id: `day_${i}`,
-            dayIndex: i,
-            muscle_group: splitItem.name,
-            estimated_calories: Math.round(duration * 7.0),
-            difficulty: experience,
-            exercises: exercises.slice(0, 5)
-          });
-          dayCount++;
-        }
-      }
-    } else if (split_type === 'Bro Split') {
-      const splitSequence = [
+    } else if (normSplit.includes('bro split')) {
+      splitSequence = [
         { name: 'Chest Day', muscles: ['chest'] },
         { name: 'Back Day', muscles: ['back'] },
         { name: 'Shoulders Day', muscles: ['shoulders'] },
         { name: 'Legs Day', muscles: ['legs'] },
         { name: 'Arms & Core Day', muscles: ['arms', 'core'] }
       ];
+    } else if (normSplit.includes('arnold split')) {
+      splitSequence = [
+        { name: 'Chest & Back Day', muscles: ['chest', 'back'] },
+        { name: 'Shoulders & Arms Day', muscles: ['shoulders', 'arms'] },
+        { name: 'Legs & Core Day', muscles: ['legs', 'core'] }
+      ];
+    } else if (normSplit.includes('powerbuilding') || normSplit.includes('strength split')) {
+      splitSequence = [
+        { name: 'Squat Compound Day', muscles: ['legs', 'core'] },
+        { name: 'Bench Compound Day', muscles: ['chest', 'arms'] },
+        { name: 'Deadlift Compound Day', muscles: ['back', 'legs'] },
+        { name: 'Overhead Compound Day', muscles: ['shoulders', 'core'] }
+      ];
+    } else if (normSplit.includes('functional') || normSplit.includes('hybrid') || normSplit.includes('crossfit')) {
+      splitSequence = [
+        { name: 'Functional Conditioning', muscles: ['legs', 'core', 'chest'] },
+        { name: 'Strength Endurance Focus', muscles: ['back', 'shoulders', 'arms'] },
+        { name: 'Full Body Work Capacity', muscles: ['chest', 'back', 'legs'] }
+      ];
+    } else if (normSplit.includes('bodyweight') || normSplit.includes('home workout')) {
+      splitSequence = [
+        { name: 'Home Push Focus', muscles: ['chest', 'shoulders', 'core'] },
+        { name: 'Home Pull Focus', muscles: ['back', 'core'] },
+        { name: 'Home Legs Focus', muscles: ['legs', 'core'] }
+      ];
+    } else if (normSplit.includes('hiit')) {
+      splitSequence = [
+        { name: 'HIIT Aerobic Capacity', muscles: ['legs', 'core'] },
+        { name: 'HIIT Power Intervals', muscles: ['chest', 'back', 'shoulders'] },
+        { name: 'HIIT Core & Conditioning', muscles: ['core', 'legs'] }
+      ];
+    } else if (normSplit.includes('mobility')) {
+      splitSequence = [
+        { name: 'Dynamic Flexibility Flow', muscles: ['legs', 'core'] },
+        { name: 'Joint Range of Motion', muscles: ['shoulders', 'back'] },
+        { name: 'Spinal Decompression & Core', muscles: ['core', 'back'] }
+      ];
+    } else { // Custom Split or Full Body fallback
+      splitSequence = [
+        { name: 'Full Body Routine', muscles: ['chest', 'back', 'legs', 'shoulders', 'core'] }
+      ];
+    }
 
-      for (let i = 0; i < 7; i++) {
-        const shouldWork = dayCount < days_per_week && i !== 2 && i !== 6; // rest on Wed/Sun
-        if (shouldWork) {
-          const splitItem = splitSequence[dayCount % splitSequence.length];
-          days.push({
-            id: `day_${i}`,
-            dayIndex: i,
-            muscle_group: splitItem.name,
-            estimated_calories: Math.round(duration * 6.5),
-            difficulty: experience,
-            exercises: getExercisesByMuscle(splitItem.muscles[0], 5)
-          });
-          dayCount++;
-        }
-      }
-    } else { // Full Body
-      for (let i = 0; i < 7; i++) {
-        const shouldWork = dayCount < days_per_week && (i === 0 || i === 2 || i === 4); // Mon/Wed/Fri
-        if (shouldWork) {
-          const muscles = ['chest', 'back', 'legs', 'shoulders', 'core'];
-          const exercises: WorkoutExercise[] = [];
-          muscles.forEach(m => {
-            exercises.push(...getExercisesByMuscle(m, 1));
-          });
+    for (let i = 0; i < 7; i++) {
+      let shouldWork = false;
+      if (days_per_week === 1) shouldWork = i === 0;
+      else if (days_per_week === 2) shouldWork = i === 0 || i === 3;
+      else if (days_per_week === 3) shouldWork = i === 0 || i === 2 || i === 4;
+      else if (days_per_week === 4) shouldWork = i === 0 || i === 1 || i === 3 || i === 4;
+      else if (days_per_week === 5) shouldWork = i !== 2 && i !== 6;
+      else if (days_per_week === 6) shouldWork = i !== 6;
+      else if (days_per_week === 7) shouldWork = true;
 
-          days.push({
-            id: `day_${i}`,
-            dayIndex: i,
-            muscle_group: `Full Body Routine (Day ${dayCount + 1})`,
-            estimated_calories: Math.round(duration * 8.0),
-            difficulty: experience,
-            exercises: exercises
-          });
-          dayCount++;
-        }
+      if (shouldWork && dayCount < days_per_week) {
+        const splitItem = splitSequence[dayCount % splitSequence.length];
+        const exercises: WorkoutExercise[] = [];
+        splitItem.muscles.forEach(m => {
+          exercises.push(...getExercisesByMuscle(m, 2));
+        });
+
+        days.push({
+          id: `day_${i}`,
+          dayIndex: i,
+          muscle_group: splitItem.name,
+          estimated_calories: Math.round(duration * 7.5),
+          difficulty: experience,
+          exercises: exercises.slice(0, 5) // limit to 5 exercises
+        });
+        dayCount++;
       }
     }
 

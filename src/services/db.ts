@@ -10,6 +10,7 @@ export interface UserProfile {
   height: number; // in cm
   weight: number; // in kg
   goal: string;
+  activity_level?: 'Sedentary' | 'Lightly Active' | 'Moderately Active' | 'Very Active' | 'Extremely Active';
   experience_level: 'Beginner' | 'Intermediate' | 'Advanced';
   available_equipment: string[];
   workout_days_preference: number;
@@ -24,6 +25,9 @@ export interface UserProfile {
   };
   avatar_url?: string;
   onboarded: boolean;
+  workout_settings?: any;
+  ai_settings?: any;
+  acknowledged_warnings?: string[];
 }
 
 export interface FoodLog {
@@ -84,6 +88,7 @@ export interface WorkoutExercise {
   sets: number;
   reps: number;
   rest: number; // in seconds
+  tempo?: string;
   tips: string;
   difficulty: string;
   // Dynamic fields during active workout tracking
@@ -97,6 +102,8 @@ export interface WorkoutDay {
   dayIndex: number; // 0 to 6 (Monday to Sunday)
   muscle_group: string;
   exercises: WorkoutExercise[];
+  warmup?: string[];
+  cooldown?: string[];
   estimated_calories: number;
   difficulty: string;
   completed?: boolean;
@@ -129,6 +136,24 @@ export interface NotificationItem {
   body: string;
   timestamp: string;
   read: boolean;
+}
+
+export interface CaloriePredictionLog {
+  id: string;
+  user_id?: string;
+  age: number;
+  gender: string;
+  height: number;
+  weight: number;
+  bmi: number;
+  workout_type: string;
+  workout_duration: number;
+  steps: number;
+  heart_rate: number;
+  calories_consumed: number;
+  calories_burned: number;
+  confidence: number;
+  created_at: string;
 }
 
 
@@ -776,10 +801,39 @@ export const db = {
 
   // --- NOTIFICATIONS FUNCTIONS ---
   async fetchNotifications(): Promise<NotificationItem[]> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data, error } = await supabase
+            .from('notifications')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('timestamp', { ascending: false });
+          if (data && !error) return data as NotificationItem[];
+        }
+      } catch (e) {
+        console.error('[DB] fetchNotifications error:', e);
+      }
+    }
     return getLocal<NotificationItem[]>('athlix_notifications', SEED_NOTIFICATIONS);
   },
 
   async markNotificationRead(id: string): Promise<void> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase
+            .from('notifications')
+            .update({ read: true })
+            .eq('id', id)
+            .eq('user_id', user.id);
+        }
+      } catch (e) {
+        console.error('[DB] markNotificationRead error:', e);
+      }
+    }
     const notifications = getLocal<NotificationItem[]>('athlix_notifications', SEED_NOTIFICATIONS);
     const index = notifications.findIndex((n) => n.id === id);
     if (index >= 0) {
@@ -789,13 +843,25 @@ export const db = {
   },
 
   async markAllNotificationsRead(): Promise<void> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase
+            .from('notifications')
+            .update({ read: true })
+            .eq('user_id', user.id);
+        }
+      } catch (e) {
+        console.error('[DB] markAllNotificationsRead error:', e);
+      }
+    }
     const notifications = getLocal<NotificationItem[]>('athlix_notifications', SEED_NOTIFICATIONS);
     notifications.forEach((n) => { n.read = true; });
     setLocal('athlix_notifications', notifications);
   },
 
   async addNotification(type: NotificationItem['type'], title: string, body: string): Promise<NotificationItem> {
-    const notifications = getLocal<NotificationItem[]>('athlix_notifications', SEED_NOTIFICATIONS);
     const newNotif: NotificationItem = {
       id: 'n_' + Math.random().toString(36).substr(2, 9),
       type,
@@ -804,8 +870,69 @@ export const db = {
       timestamp: new Date().toISOString(),
       read: false,
     };
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase
+            .from('notifications')
+            .insert([{ ...newNotif, user_id: user.id }]);
+        }
+      } catch (e) {
+        console.error('[DB] addNotification error:', e);
+      }
+    }
+    const notifications = getLocal<NotificationItem[]>('athlix_notifications', SEED_NOTIFICATIONS);
     notifications.unshift(newNotif);
     setLocal('athlix_notifications', notifications);
     return newNotif;
+  },
+
+  // --- ML PREDICTIONS FUNCTIONS ---
+  async fetchPredictions(): Promise<CaloriePredictionLog[]> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data, error } = await supabase
+            .from('calories_predictions')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
+          if (data && !error) return data as CaloriePredictionLog[];
+        }
+      } catch (e) {
+        console.error('[DB] fetchPredictions error:', e);
+      }
+    }
+    return getLocal<CaloriePredictionLog[]>('athlix_predictions', []);
+  },
+
+  async savePrediction(prediction: Omit<CaloriePredictionLog, 'id' | 'created_at'>): Promise<CaloriePredictionLog> {
+    const newPrediction: CaloriePredictionLog = {
+      ...prediction,
+      id: Math.random().toString(36).substr(2, 9),
+      created_at: new Date().toISOString()
+    };
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data, error } = await supabase
+            .from('calories_predictions')
+            .insert([{ ...newPrediction, user_id: user.id }])
+            .select()
+            .single();
+          if (data && !error) return data as CaloriePredictionLog;
+        }
+      } catch (e) {
+        console.error('[DB] savePrediction error:', e);
+      }
+    }
+    const predictions = getLocal<CaloriePredictionLog[]>('athlix_predictions', []);
+    predictions.unshift(newPrediction);
+    setLocal('athlix_predictions', predictions);
+    return newPrediction;
   }
 };
+
