@@ -345,13 +345,22 @@ const getLocal = <T>(key: string, defaultValue: T): T => {
   return JSON.parse(data) as T;
 };
 
+// Safe get that doesn't overwrite existing data
+const getLocalSafe = <T>(key: string, defaultValue: T): T => {
+  const data = localStorage.getItem(key);
+  if (!data) {
+    return defaultValue;
+  }
+  return JSON.parse(data) as T;
+};
+
 const setLocal = <T>(key: string, data: T): void => {
   localStorage.setItem(key, JSON.stringify(data));
 };
 
 // Initialize localStorage values if they do not exist
 const initLocalStorage = () => {
-  getLocal('athlix_profile', null as UserProfile | null);
+  // Only initialize other data, leave profile alone
   getLocal('athlix_weights', SEED_WEIGHTS);
   getLocal('athlix_foods', SEED_FOODS);
   getLocal('athlix_habits', DEFAULT_HABITS);
@@ -391,7 +400,7 @@ export const db = {
       } else {
       }
     }
-    return getLocal<UserProfile | null>('athlix_profile', null);
+    return getLocalSafe<UserProfile | null>('athlix_profile', null);
   },
 
   async updateUserProfile(profile: Partial<UserProfile>): Promise<UserProfile> {

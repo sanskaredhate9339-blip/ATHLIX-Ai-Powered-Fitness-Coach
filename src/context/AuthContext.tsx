@@ -41,6 +41,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           // If no profile exists for this user, create a minimal one
           if (!p) {
+            // Check localStorage first to avoid overwriting existing profile
+            const localProfile = localStorage.getItem('athlix_profile');
+            if (localProfile) {
+              try {
+                const parsed = JSON.parse(localProfile);
+                if (parsed && parsed.onboarded) {
+                  setProfile(parsed);
+                  return;
+                }
+              } catch (e) {
+                // If parse fails, continue to create new profile
+              }
+            }
             const newProfile = await db.updateUserProfile({
               id: session.user.id,
               email: session.user.email,
@@ -81,6 +94,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             // If no profile exists for this user, create a minimal one
             if (!p) {
+              // Check localStorage first to avoid overwriting existing profile
+              const localProfile = localStorage.getItem('athlix_profile');
+              if (localProfile) {
+                try {
+                  const parsed = JSON.parse(localProfile);
+                  if (parsed && parsed.onboarded) {
+                    setProfile(parsed);
+                    return;
+                  }
+                } catch (e) {
+                  // If parse fails, continue to create new profile
+                }
+              }
               const newProfile = await db.updateUserProfile({
                 id: session.user.id,
                 email: session.user.email,
@@ -281,10 +307,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ...onboardingData,
       onboarded: true
     });
+    // Directly set the updated profile to ensure state is correct
     setProfile(updated);
-    // Force refresh from localStorage to ensure consistency
-    const refreshed = await db.fetchUserProfile();
-    setProfile(refreshed);
   };
 
   return (
