@@ -428,11 +428,12 @@ export const db = {
       }
     }
     console.log('[DB] Using local fallback for profile update');
-    const current = getLocal<UserProfile | null>('athlix_profile', null);
+    const current = getLocalSafe<UserProfile | null>('athlix_profile', null);
     const updated = current ? { ...current, ...profile } : profile as UserProfile;
     setLocal('athlix_profile', updated);
     // Also update localStorage directly to ensure persistence
     localStorage.setItem('athlix_profile', JSON.stringify(updated));
+    console.log('[DB] Profile saved to localStorage:', updated);
     return updated;
   },
 

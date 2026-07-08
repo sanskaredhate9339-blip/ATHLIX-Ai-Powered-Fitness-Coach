@@ -39,9 +39,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           const p = await db.fetchUserProfile();
           
-          // If no profile exists for this user, create a minimal one
+          // If no profile exists for this user, check localStorage first
           if (!p) {
-            // Check localStorage first to avoid overwriting existing profile
             const localProfile = localStorage.getItem('athlix_profile');
             if (localProfile) {
               try {
@@ -54,6 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 // If parse fails, continue to create new profile
               }
             }
+            // Only create minimal profile if no valid local profile exists
             const newProfile = await db.updateUserProfile({
               id: session.user.id,
               email: session.user.email,

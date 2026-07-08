@@ -299,6 +299,8 @@ export const Onboarding: React.FC = () => {
 
     try {
       await completeOnboarding(onboardingData);
+      // Wait a moment to ensure data is persisted
+      await new Promise(resolve => setTimeout(resolve, 100));
       navigate(isEditMode ? '/profile' : '/dashboard');
     } catch (e) {
       console.error('Error completing onboarding:', e);
