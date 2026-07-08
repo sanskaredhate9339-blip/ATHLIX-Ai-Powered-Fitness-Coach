@@ -390,8 +390,13 @@ export const db = {
         if (data && !error) {
           return data as UserProfile;
         }
-        // If no profile exists, return null - this triggers onboarding
+        // If no profile exists in Supabase, check localStorage
         if (error && error.code === 'PGRST116') {
+          const localProfile = getLocalSafe<UserProfile | null>('athlix_profile', null);
+          if (localProfile && localProfile.onboarded) {
+            console.log('[DB] Using local profile as fallback');
+            return localProfile;
+          }
           return null;
         }
         if (error) {
