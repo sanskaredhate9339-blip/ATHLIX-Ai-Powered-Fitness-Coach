@@ -351,9 +351,6 @@ const setLocal = <T>(key: string, data: T): void => {
 
 // Initialize localStorage values if they do not exist
 const initLocalStorage = () => {
-  // Force clear any existing mock profile data
-  localStorage.removeItem('athlix_profile');
-  
   getLocal('athlix_profile', null as UserProfile | null);
   getLocal('athlix_weights', SEED_WEIGHTS);
   getLocal('athlix_foods', SEED_FOODS);
