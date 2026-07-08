@@ -309,6 +309,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     // Directly set the updated profile to ensure state is correct
     setProfile(updated);
+    // Force sync to localStorage immediately
+    localStorage.setItem('athlix_profile', JSON.stringify(updated));
   };
 
   return (
