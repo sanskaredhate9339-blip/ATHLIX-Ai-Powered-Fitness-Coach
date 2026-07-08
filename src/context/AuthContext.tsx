@@ -47,6 +47,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 const parsed = JSON.parse(localProfile);
                 if (parsed && parsed.onboarded) {
                   setProfile(parsed);
+                  // Sync to Supabase to prevent future data loss
+                  await db.updateUserProfile(parsed);
+                  setIsLoading(false);
                   return;
                 }
               } catch (e) {
@@ -83,6 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         } else {
         }
+        setIsLoading(false);
         
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
           
@@ -92,21 +96,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             const p = await db.fetchUserProfile();
             
-            // If no profile exists for this user, create a minimal one
+            // If no profile exists for this user, check localStorage first
             if (!p) {
-              // Check localStorage first to avoid overwriting existing profile
               const localProfile = localStorage.getItem('athlix_profile');
               if (localProfile) {
                 try {
                   const parsed = JSON.parse(localProfile);
                   if (parsed && parsed.onboarded) {
                     setProfile(parsed);
+                    // Sync to Supabase to prevent future data loss
+                    await db.updateUserProfile(parsed);
                     return;
                   }
                 } catch (e) {
                   // If parse fails, continue to create new profile
                 }
               }
+              // Only create minimal profile if no valid local profile exists
               const newProfile = await db.updateUserProfile({
                 id: session.user.id,
                 email: session.user.email,
@@ -278,6 +284,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       if (isSupabaseConfigured && supabase) {
         await supabase.auth.signOut();
+        // Clear local state but keep profile in localStorage for recovery
+        setIsAuthenticated(false);
+        setUserEmail(null);
+        setProfile(null);
       } else {
         localStorage.removeItem('athlix_session_active');
         localStorage.removeItem('athlix_session_email');

@@ -425,6 +425,8 @@ export const db = {
           .single();
         if (data && !error) {
           console.log('[DB] Profile updated successfully in Supabase');
+          // Also update localStorage as backup
+          localStorage.setItem('athlix_profile', JSON.stringify(data));
           return data as UserProfile;
         }
         if (error) {
