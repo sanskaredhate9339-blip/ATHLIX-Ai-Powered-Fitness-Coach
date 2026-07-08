@@ -26,13 +26,27 @@ export const AppLayout: React.FC = () => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // Wait for profile to load before making redirect decisions
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-bg-app flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl border-4 border-primary border-t-accent animate-spin" />
+          <span className="font-heading font-semibold text-text-muted text-sm tracking-wide animate-pulse">
+            Loading profile...
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   // Redirect to onboarding if authenticated but onboarding is incomplete
-  if (profile && !profile.onboarded && location.pathname !== '/onboarding') {
+  if (!profile.onboarded && location.pathname !== '/onboarding') {
     return <Navigate to="/onboarding" replace />;
   }
 
   // If onboarding page but already onboarded, redirect to dashboard
-  if (profile && profile.onboarded && location.pathname === '/onboarding') {
+  if (profile.onboarded && location.pathname === '/onboarding') {
     return <Navigate to="/dashboard" replace />;
   }
 
