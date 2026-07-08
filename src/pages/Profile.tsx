@@ -16,11 +16,16 @@ export const Profile: React.FC = () => {
 
   useEffect(() => {
     const loadProfile = async () => {
+      // Don't refresh if profile already exists to avoid overwriting
+      if (profile && profile.onboarded) {
+        setIsLoading(false);
+        return;
+      }
       await refreshProfile();
       setIsLoading(false);
     };
     loadProfile();
-  }, [refreshProfile]);
+  }, [refreshProfile, profile]);
 
   // Redirect to onboarding if profile doesn't exist or is incomplete
   useEffect(() => {
