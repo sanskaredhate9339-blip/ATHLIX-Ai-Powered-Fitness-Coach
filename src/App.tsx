@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
-import { supabase } from './services/supabase';
+import { supabase, isSupabaseConfigured } from './services/supabase';
 
 // Context Providers
 import { ThemeProvider } from './context/ThemeContext';
@@ -39,30 +39,29 @@ import { NotFound } from './pages/NotFound';
 const AuthCallback = () => {
   useEffect(() => {
     const handleOAuthCallback = async () => {
-      
       try {
         if (!supabase) {
-          console.error('[AuthCallback] Supabase not configured');
+          console.error('[AuthCallback] Supabase not configured, redirecting to login');
           window.location.href = '/login?error=no_supabase';
           return;
         }
 
         // Supabase handles OAuth session exchange automatically from URL hash/params
         // We need to wait for the session to be established
-        
+
         // Try to get session with retries for slower mobile networks
         let session = null;
         let lastError = null;
-        
+
         for (let i = 0; i < 5; i++) {
           const { data, error } = await supabase.auth.getSession();
           lastError = error;
-          
+
           if (data.session) {
             session = data.session;
             break;
           }
-          
+
           // Wait before retry (exponential backoff)
           if (i < 4) {
             const delay = 500 * Math.pow(2, i);
@@ -77,10 +76,9 @@ const AuthCallback = () => {
         }
 
         if (session) {
-          
           // Wait a moment for auth state to propagate
           await new Promise(resolve => setTimeout(resolve, 500));
-          
+
           // Navigate to dashboard (auth context will handle onboarding check)
           window.location.href = '/dashboard';
         } else {
@@ -106,6 +104,24 @@ const AuthCallback = () => {
   );
 };
 
+// Local fallback callback for when Supabase is disabled
+const LocalCallback = () => {
+  useEffect(() => {
+    window.location.href = '/login';
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-bg-app flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 rounded-2xl border-4 border-primary border-t-accent animate-spin" />
+        <span className="font-heading font-semibold text-text-muted text-sm tracking-wide animate-pulse">
+          Redirecting to login...
+        </span>
+      </div>
+    </div>
+  );
+};
+
 function App() {
   return (
     <BrowserRouter>
@@ -120,7 +136,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
-                <Route path="/auth/callback" element={<AuthCallback />} />
+                <Route path="/auth/callback" element={isSupabaseConfigured ? <AuthCallback /> : <LocalCallback />} />
 
                 {/* Protected Routes (Require Auth & Onboarding checks) */}
                 <Route element={<AppLayout />}>

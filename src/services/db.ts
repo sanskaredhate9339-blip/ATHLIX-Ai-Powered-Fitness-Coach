@@ -337,37 +337,68 @@ const SEED_WORKOUT_PLAN: WorkoutPlan = {
 
 // --- LocalStorage Database Helper Actions ---
 const getLocal = <T>(key: string, defaultValue: T): T => {
-  const data = localStorage.getItem(key);
-  if (!data) {
-    localStorage.setItem(key, JSON.stringify(defaultValue));
+  try {
+    const data = localStorage.getItem(key);
+    if (!data) {
+      localStorage.setItem(key, JSON.stringify(defaultValue));
+      return defaultValue;
+    }
+    return JSON.parse(data) as T;
+  } catch (e) {
+    console.error('[DB] Error in getLocal for key:', key, e);
     return defaultValue;
   }
-  return JSON.parse(data) as T;
 };
 
 // Safe get that doesn't overwrite existing data
 const getLocalSafe = <T>(key: string, defaultValue: T): T => {
-  const data = localStorage.getItem(key);
-  if (!data) {
+  try {
+    const data = localStorage.getItem(key);
+    if (!data) {
+      return defaultValue;
+    }
+    return JSON.parse(data) as T;
+  } catch (e) {
+    console.error('[DB] Error in getLocalSafe for key:', key, e);
     return defaultValue;
   }
-  return JSON.parse(data) as T;
 };
 
 const setLocal = <T>(key: string, data: T): void => {
-  localStorage.setItem(key, JSON.stringify(data));
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+    console.log('[DB] Successfully set localStorage key:', key);
+  } catch (e) {
+    console.error('[DB] Error in setLocal for key:', key, e);
+  }
 };
 
 // Initialize localStorage values if they do not exist
 const initLocalStorage = () => {
-  // Only initialize other data, leave profile alone
-  getLocal('athlix_weights', SEED_WEIGHTS);
-  getLocal('athlix_foods', SEED_FOODS);
-  getLocal('athlix_habits', DEFAULT_HABITS);
-  getLocal('athlix_habit_logs', SEED_HABIT_LOGS);
-  getLocal('athlix_chat_messages', SEED_CHAT_MESSAGES);
-  getLocal('athlix_notifications', SEED_NOTIFICATIONS);
-  getLocal('athlix_workout_plans', [SEED_WORKOUT_PLAN]);
+  console.log('[DB] initLocalStorage called');
+  console.log('[DB] Browser info:', navigator.userAgent);
+  console.log('[DB] localStorage available:', typeof localStorage !== 'undefined');
+
+  try {
+    // Check if profile exists before initializing
+    const existingProfile = localStorage.getItem('athlix_profile');
+    console.log('[DB] Existing profile before init:', existingProfile);
+
+    // Only initialize other data, leave profile alone
+    getLocal('athlix_weights', SEED_WEIGHTS);
+    getLocal('athlix_foods', SEED_FOODS);
+    getLocal('athlix_habits', DEFAULT_HABITS);
+    getLocal('athlix_habit_logs', SEED_HABIT_LOGS);
+    getLocal('athlix_chat_messages', SEED_CHAT_MESSAGES);
+    getLocal('athlix_notifications', SEED_NOTIFICATIONS);
+    getLocal('athlix_workout_plans', [SEED_WORKOUT_PLAN]);
+
+    const profileAfterInit = localStorage.getItem('athlix_profile');
+    console.log('[DB] Profile after init:', profileAfterInit);
+    console.log('[DB] Profile preserved:', existingProfile === profileAfterInit);
+  } catch (e) {
+    console.error('[DB] Error during initLocalStorage:', e);
+  }
 };
 
 // Auto-run local init
@@ -379,58 +410,97 @@ if (typeof window !== 'undefined') {
 export const db = {
   // --- USER PROFILE FUNCTIONS ---
   async fetchUserProfile(): Promise<UserProfile | null> {
+    console.log('[DB] fetchUserProfile called, Supabase configured:', isSupabaseConfigured);
     if (isSupabaseConfigured && supabase) {
       const { data: { user } } = await supabase.auth.getUser();
+      console.log('[DB] Current user:', user?.id, user?.email);
       if (user) {
-        const { data, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', user.id)
-          .maybeSingle();
-        if (data && !error) {
-          return data as UserProfile;
-        }
-        // If no profile exists in Supabase, check localStorage
-        if (error && error.code === 'PGRST116') {
-          const localProfile = getLocalSafe<UserProfile | null>('athlix_profile', null);
-          if (localProfile && localProfile.onboarded) {
-            console.log('[DB] Using local profile as fallback');
-            return localProfile;
+        try {
+          const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', user.id)
+            .maybeSingle();
+          console.log('[DB] Supabase query result:', data, error);
+          if (data && !error) {
+            console.log('[DB] Returning profile from Supabase');
+            return data as UserProfile;
           }
-          return null;
-        }
-        if (error) {
-          console.error('[DB] Error fetching profile:', error);
+          // If no profile exists in Supabase, check localStorage
+          if (error && error.code === 'PGRST116') {
+            console.log('[DB] No profile in Supabase, checking localStorage');
+            const localProfile = getLocalSafe<UserProfile | null>('athlix_profile', null);
+            if (localProfile && localProfile.onboarded) {
+              console.log('[DB] Using local profile as fallback');
+              return localProfile;
+            }
+            return null;
+          }
+          if (error) {
+            console.error('[DB] Error fetching profile:', error);
+            // If table doesn't exist, fall back to localStorage
+            if (error.message.includes('does not exist') || error.code === '42P01') {
+              console.log('[DB] Users table does not exist, using localStorage');
+              return getLocalSafe<UserProfile | null>('athlix_profile', null);
+            }
+          }
+        } catch (e) {
+          console.error('[DB] Exception in fetchUserProfile:', e);
+          return getLocalSafe<UserProfile | null>('athlix_profile', null);
         }
       } else {
+        console.log('[DB] No authenticated user');
       }
     }
+    console.log('[DB] Returning from localStorage');
     return getLocalSafe<UserProfile | null>('athlix_profile', null);
   },
 
   async updateUserProfile(profile: Partial<UserProfile>): Promise<UserProfile> {
+    console.log('[DB] updateUserProfile called with:', profile);
     if (isSupabaseConfigured && supabase) {
       const { data: { user } } = await supabase.auth.getUser();
+      console.log('[DB] Current user for update:', user?.id, user?.email);
       if (user) {
-        // Use upsert to either insert or update
-        const { data, error } = await supabase
-          .from('users')
-          .upsert({
-            id: user.id,
-            email: user.email,
-            ...profile,
-            updated_at: new Date().toISOString()
-          })
-          .select()
-          .single();
-        if (data && !error) {
-          console.log('[DB] Profile updated successfully in Supabase');
-          // Also update localStorage as backup
-          localStorage.setItem('athlix_profile', JSON.stringify(data));
-          return data as UserProfile;
-        }
-        if (error) {
-          console.error('[DB] Error updating profile:', error);
+        try {
+          // Use upsert to either insert or update
+          const { data, error } = await supabase
+            .from('users')
+            .upsert({
+              id: user.id,
+              email: user.email,
+              ...profile,
+              updated_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+          console.log('[DB] Upsert result:', data, error);
+          if (data && !error) {
+            console.log('[DB] Profile updated successfully in Supabase');
+            // Also update localStorage as backup
+            localStorage.setItem('athlix_profile', JSON.stringify(data));
+            return data as UserProfile;
+          }
+          if (error) {
+            console.error('[DB] Error updating profile:', error);
+            // If table doesn't exist, fall back to localStorage
+            if (error.message.includes('does not exist') || error.code === '42P01') {
+              console.log('[DB] Users table does not exist, using localStorage');
+              const current = getLocalSafe<UserProfile | null>('athlix_profile', null);
+              const updated = current ? { ...current, ...profile } : profile as UserProfile;
+              setLocal('athlix_profile', updated);
+              localStorage.setItem('athlix_profile', JSON.stringify(updated));
+              return updated;
+            }
+          }
+        } catch (e) {
+          console.error('[DB] Exception in updateUserProfile:', e);
+          // Fall back to localStorage on exception
+          const current = getLocalSafe<UserProfile | null>('athlix_profile', null);
+          const updated = current ? { ...current, ...profile } : profile as UserProfile;
+          setLocal('athlix_profile', updated);
+          localStorage.setItem('athlix_profile', JSON.stringify(updated));
+          return updated;
         }
       }
     }
@@ -817,64 +887,99 @@ export const db = {
 
   // --- NOTIFICATIONS FUNCTIONS ---
   async fetchNotifications(): Promise<NotificationItem[]> {
+    console.log('[DB] fetchNotifications called');
     if (isSupabaseConfigured && supabase) {
       try {
         const { data: { user } } = await supabase.auth.getUser();
+        console.log('[DB] Current user for notifications:', user?.id);
         if (user) {
           const { data, error } = await supabase
             .from('notifications')
             .select('*')
             .eq('user_id', user.id)
             .order('timestamp', { ascending: false });
-          if (data && !error) return data as NotificationItem[];
+          console.log('[DB] Notifications query result:', data, error);
+          if (data && !error) {
+            // Convert UUID id to string for compatibility
+            const notifications = data.map((n: any) => ({
+              ...n,
+              id: n.id.toString()
+            })) as NotificationItem[];
+            return notifications;
+          }
+          if (error) {
+            console.error('[DB] Notifications query error:', error);
+            // If table doesn't exist, fall back to localStorage
+            if (error.code === '42P01' || error.message.includes('does not exist')) {
+              console.log('[DB] Notifications table does not exist, using localStorage');
+              return getLocal<NotificationItem[]>('athlix_notifications', SEED_NOTIFICATIONS);
+            }
+          }
         }
       } catch (e) {
-        console.error('[DB] fetchNotifications error:', e);
+        console.error('[DB] fetchNotifications exception:', e);
       }
     }
+    console.log('[DB] Using localStorage for notifications');
     return getLocal<NotificationItem[]>('athlix_notifications', SEED_NOTIFICATIONS);
   },
 
   async markNotificationRead(id: string): Promise<void> {
+    console.log('[DB] markNotificationRead called for id:', id);
     if (isSupabaseConfigured && supabase) {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          await supabase
+          const { error } = await supabase
             .from('notifications')
             .update({ read: true })
             .eq('id', id)
             .eq('user_id', user.id);
+          if (error) {
+            console.error('[DB] markNotificationRead error:', error);
+          } else {
+            console.log('[DB] Successfully marked notification as read in Supabase');
+          }
         }
       } catch (e) {
-        console.error('[DB] markNotificationRead error:', e);
+        console.error('[DB] markNotificationRead exception:', e);
       }
     }
+    // Always update localStorage as backup
     const notifications = getLocal<NotificationItem[]>('athlix_notifications', SEED_NOTIFICATIONS);
     const index = notifications.findIndex((n) => n.id === id);
     if (index >= 0) {
       notifications[index].read = true;
       setLocal('athlix_notifications', notifications);
+      console.log('[DB] Updated notification as read in localStorage');
     }
   },
 
   async markAllNotificationsRead(): Promise<void> {
+    console.log('[DB] markAllNotificationsRead called');
     if (isSupabaseConfigured && supabase) {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          await supabase
+          const { error } = await supabase
             .from('notifications')
             .update({ read: true })
             .eq('user_id', user.id);
+          if (error) {
+            console.error('[DB] markAllNotificationsRead error:', error);
+          } else {
+            console.log('[DB] Successfully marked all notifications as read in Supabase');
+          }
         }
       } catch (e) {
-        console.error('[DB] markAllNotificationsRead error:', e);
+        console.error('[DB] markAllNotificationsRead exception:', e);
       }
     }
+    // Always update localStorage as backup
     const notifications = getLocal<NotificationItem[]>('athlix_notifications', SEED_NOTIFICATIONS);
     notifications.forEach((n) => { n.read = true; });
     setLocal('athlix_notifications', notifications);
+    console.log('[DB] Updated all notifications as read in localStorage');
   },
 
   async addNotification(type: NotificationItem['type'], title: string, body: string): Promise<NotificationItem> {
@@ -886,21 +991,37 @@ export const db = {
       timestamp: new Date().toISOString(),
       read: false,
     };
+    console.log('[DB] addNotification called:', newNotif);
     if (isSupabaseConfigured && supabase) {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          await supabase
+          const { data, error } = await supabase
             .from('notifications')
-            .insert([{ ...newNotif, user_id: user.id }]);
+            .insert([{ ...newNotif, user_id: user.id }])
+            .select()
+            .single();
+          if (error) {
+            console.error('[DB] addNotification error:', error);
+            // If table doesn't exist, fall back to localStorage only
+            if (error.code === '42P01' || error.message.includes('does not exist')) {
+              console.log('[DB] Notifications table does not exist, using localStorage only');
+            }
+          } else if (data) {
+            console.log('[DB] Successfully added notification to Supabase');
+            // Update the id with the UUID from Supabase
+            newNotif.id = data.id.toString();
+          }
         }
       } catch (e) {
-        console.error('[DB] addNotification error:', e);
+        console.error('[DB] addNotification exception:', e);
       }
     }
+    // Always add to localStorage as backup
     const notifications = getLocal<NotificationItem[]>('athlix_notifications', SEED_NOTIFICATIONS);
     notifications.unshift(newNotif);
     setLocal('athlix_notifications', notifications);
+    console.log('[DB] Added notification to localStorage');
     return newNotif;
   },
 

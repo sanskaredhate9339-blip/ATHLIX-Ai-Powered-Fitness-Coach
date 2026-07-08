@@ -151,14 +151,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return () => subscription.unsubscribe();
       } else {
         // Local Fallback Auth Check
+        console.log('[Auth] Local fallback auth check');
         const sessionActive = localStorage.getItem('athlix_session_active') === 'true';
+        console.log('[Auth] Session active:', sessionActive);
         if (sessionActive) {
           setIsAuthenticated(true);
           const activeEmail = localStorage.getItem('athlix_session_email');
+          console.log('[Auth] Active email:', activeEmail);
           setUserEmail(activeEmail);
           const p = await db.fetchUserProfile();
+          console.log('[Auth] Fetched profile:', p);
           setProfile(p);
         } else {
+          console.log('[Auth] No active session, checking for existing profile');
+          // Even without session, check if there's a profile in localStorage
+          const existingProfile = localStorage.getItem('athlix_profile');
+          console.log('[Auth] Existing profile in localStorage:', existingProfile);
+          if (existingProfile) {
+            try {
+              const parsed = JSON.parse(existingProfile);
+              if (parsed && parsed.onboarded) {
+                console.log('[Auth] Found valid profile, setting authenticated state');
+                setIsAuthenticated(true);
+                const activeEmail = localStorage.getItem('athlix_session_email');
+                setUserEmail(activeEmail);
+                setProfile(parsed);
+                setIsLoading(false);
+                return;
+              }
+            } catch (e) {
+              console.error('[Auth] Error parsing existing profile:', e);
+            }
+          }
           setIsAuthenticated(false);
           setUserEmail(null);
           setProfile(null);
@@ -313,14 +337,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const completeOnboarding = async (onboardingData: Partial<UserProfile>) => {
+    console.log('[Auth] completeOnboarding called with:', onboardingData);
     const updated = await db.updateUserProfile({
       ...onboardingData,
       onboarded: true
     });
+    console.log('[Auth] Updated profile from DB:', updated);
     // Directly set the updated profile to ensure state is correct
     setProfile(updated);
     // Force sync to localStorage immediately
     localStorage.setItem('athlix_profile', JSON.stringify(updated));
+    console.log('[Auth] Profile saved to localStorage');
   };
 
   return (
