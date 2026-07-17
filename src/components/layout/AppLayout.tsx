@@ -45,8 +45,9 @@ export const AppLayout: React.FC = () => {
     return <Navigate to="/onboarding" replace />;
   }
 
-  // If onboarding page but already onboarded, redirect to dashboard
-  if (profile.onboarded && location.pathname === '/onboarding') {
+  // If onboarding page but already onboarded, redirect to dashboard, unless editing profile
+  const isEditingProfile = new URLSearchParams(location.search).get('edit') === 'true';
+  if (profile.onboarded && location.pathname === '/onboarding' && !isEditingProfile) {
     return <Navigate to="/dashboard" replace />;
   }
 

@@ -9,27 +9,24 @@ import {
 
 export const Profile: React.FC = () => {
   const navigate = useNavigate();
-  const { profile, logout, userEmail, refreshProfile } = useAuth();
+  const { profile, logout, userEmail } = useAuth();
   const { unitSystem, setUnitSystem, formatWeight } = useUnit();
   const { foods, weights, habitLogs } = useFitness();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadProfile = async () => {
-      // Don't refresh if profile already exists to avoid overwriting
-      if (profile && profile.onboarded) {
-        setIsLoading(false);
-        return;
-      }
-      await refreshProfile();
+      console.log('[Profile] loadProfile called, profile:', profile);
       setIsLoading(false);
     };
     loadProfile();
-  }, [refreshProfile, profile]);
+  }, []);
 
   // Redirect to onboarding if profile doesn't exist or is incomplete
   useEffect(() => {
+    console.log('[Profile] Redirect check, isLoading:', isLoading, 'profile:', profile);
     if (!isLoading && (!profile || !profile.onboarded)) {
+      console.log('[Profile] Redirecting to onboarding');
       navigate('/onboarding');
     }
   }, [profile, isLoading, navigate]);
@@ -246,7 +243,15 @@ export const Profile: React.FC = () => {
         </button>
         
         <button
-          onClick={() => navigate('/onboarding?edit=true')}
+          onClick={() => {
+            console.log("Edit Profile clicked");
+            try {
+              navigate('/onboarding?edit=true');
+              console.log("Edit Profile modal/route opened");
+            } catch (err) {
+              console.error("Error navigating to edit profile:", err);
+            }
+          }}
           className="flex-1 py-4 bg-primary/10 hover:bg-primary/20 border border-primary/25 text-primary rounded-2xl text-center text-xs font-bold flex items-center justify-center gap-2 transition-all"
         >
           <Target className="w-4.5 h-4.5" /> Edit Profile
